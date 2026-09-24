@@ -1,0 +1,2066 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>FlexKnit Link — Logistics × Merchandising Control Tower (standalone)</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%230d9488'/%3E%3Cpath d='M6 13l5-6 5 6 5-6 5 6M6 21l5-6 5 6 5-6 5 6' fill='none' stroke='white' stroke-width='2.6' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E">
+<style>
+/* ============================================================
+   FlexKnit Link — design system
+   ============================================================ */
+:root{
+  --bg:#f3f5f8; --surface:#ffffff; --border:#e4e9f0; --border2:#eef1f6;
+  --ink:#0e1a2b; --ink2:#3d4c5e; --mut:#75808e; --faint:#a3adb8;
+  --accent:#0d9488; --accent2:#0f766e; --accent-soft:#e4f4f2; --accent-ink:#0b5d55;
+  --navy:#0a1424; --navy2:#0f2036; --navy-line:#1d3252;
+  --amber:#d97706; --amber-bg:#fdf1dc; --amber-ink:#92580a;
+  --red:#dc2626; --red-bg:#fde5e5; --red-ink:#a02222;
+  --green:#15803d; --green-bg:#def7e6;
+  --blue:#0369a1; --blue-bg:#e0f0fc;
+  --violet:#7c3aed; --violet-bg:#ece6fd;
+  --indigo:#4f46e5; --indigo-bg:#e7e7fd;
+  --teal-bg:#dcf2f0; --slate:#64748b; --slate-bg:#eceff3;
+  --cyan:#0e7490; --cyan-bg:#dcf3f8;
+  --shadow:0 1px 2px rgba(16,24,40,.05),0 1px 3px rgba(16,24,40,.07);
+  --shadow-lg:0 12px 40px rgba(10,20,36,.18);
+  --r:12px; --r-sm:8px;
+  --font:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;
+  --mono:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%}
+body{font-family:var(--font);background:var(--bg);color:var(--ink);font-size:14px;line-height:1.45;-webkit-font-smoothing:antialiased}
+body.locked{overflow:hidden}
+button{font-family:inherit;cursor:pointer;border:none;background:none;font-size:inherit;color:inherit}
+input,select,textarea{font-family:inherit;font-size:14px;color:var(--ink)}
+a{color:inherit;text-decoration:none}
+svg{display:block}
+::selection{background:#b9e6e1}
+
+/* scrollbars */
+::-webkit-scrollbar{width:10px;height:10px}
+::-webkit-scrollbar-thumb{background:#c6ced9;border-radius:8px;border:2px solid transparent;background-clip:content-box}
+::-webkit-scrollbar-track{background:transparent}
+
+/* ============================ LOGIN ============================ */
+.login{display:grid;grid-template-columns:1.05fr 1fr;min-height:100vh}
+.login-brand{background:linear-gradient(160deg,#0a1424 0%,#0e2138 55%,#0c2f3c 100%);color:#e8eef6;padding:56px 64px;display:flex;flex-direction:column;position:relative;overflow:hidden}
+.login-brand::after{content:"";position:absolute;inset:auto -20% -40px -20%;height:70%;opacity:.5;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='60'%3E%3Cpath d='M0 45 L30 15 L60 45 L90 15 L120 45' fill='none' stroke='%23164852' stroke-width='16' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");background-size:120px 60px}
+.login-logo{display:flex;align-items:center;gap:14px;position:relative;z-index:1}
+.logo-mark{width:44px;height:44px;border-radius:11px;background:linear-gradient(135deg,#14b8a6,#0f766e);display:grid;place-items:center;box-shadow:0 6px 18px rgba(13,148,136,.45)}
+.login-brand h1{font-size:34px;letter-spacing:-.02em;line-height:1.15;margin:64px 0 14px;font-weight:800}
+.login-brand h1 em{font-style:normal;color:#2dd4bf}
+.login-brand .sub{color:#9fb2c8;font-size:16px;max-width:420px;line-height:1.6}
+.login-feats{margin-top:42px;display:flex;flex-direction:column;gap:14px;position:relative;z-index:1}
+.login-feat{display:flex;gap:12px;align-items:flex-start;color:#c3d2e2;font-size:14px}
+.login-feat .ic{flex:0 0 34px;height:34px;border-radius:9px;background:rgba(45,212,191,.12);border:1px solid rgba(45,212,191,.25);display:grid;place-items:center;color:#2dd4bf}
+.login-foot{margin-top:auto;color:#617a94;font-size:12.5px;position:relative;z-index:1}
+.login-panel{background:var(--surface);display:flex;align-items:center;justify-content:center;padding:48px 40px;overflow:auto}
+.login-box{width:100%;max-width:460px}
+.login-box h2{font-size:22px;font-weight:800;letter-spacing:-.01em}
+.login-box .hint{color:var(--mut);margin:6px 0 26px}
+.team-head{font-size:11px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--faint);margin:22px 0 10px;display:flex;align-items:center;gap:8px}
+.team-head .dot{width:7px;height:7px;border-radius:50%}
+.user-pick{width:100%;display:flex;align-items:center;gap:12px;padding:11px 14px;border:1.5px solid var(--border);border-radius:12px;background:#fff;margin-bottom:8px;transition:.15s;text-align:left}
+.user-pick:hover{border-color:var(--accent);background:#f6fdfc;transform:translateY(-1px);box-shadow:var(--shadow)}
+.user-pick .up-name{font-weight:700;font-size:13.5px}
+.user-pick .up-title{color:var(--mut);font-size:12px}
+.user-pick .up-go{margin-left:auto;color:var(--faint)}
+.user-pick:hover .up-go{color:var(--accent)}
+.login-note{margin-top:26px;background:#f6f8fb;border:1px solid var(--border2);border-radius:10px;padding:12px 14px;font-size:12.5px;color:var(--mut)}
+.login-note b{color:var(--ink2)}
+
+/* ============================ SHELL ============================ */
+.shell{display:grid;grid-template-columns:236px 1fr;min-height:100vh}
+.side{background:linear-gradient(180deg,var(--navy),var(--navy2));color:#b9c7d9;display:flex;flex-direction:column;position:sticky;top:0;height:100vh}
+.side-logo{display:flex;align-items:center;gap:11px;padding:18px 18px 16px;border-bottom:1px solid var(--navy-line)}
+.side-logo .t{line-height:1.15}
+.side-logo .t b{color:#fff;font-size:15px;letter-spacing:.02em;display:block}
+.side-logo .t span{font-size:10.5px;color:#5f7a94;display:block}
+.side-nav{padding:14px 12px;display:flex;flex-direction:column;gap:3px;flex:1;overflow:auto}
+.nav-sec{font-size:10px;font-weight:700;letter-spacing:.12em;color:#4c617d;text-transform:uppercase;margin:14px 8px 6px}
+.nav-it{display:flex;align-items:center;gap:11px;padding:9.5px 11px;border-radius:9px;color:#aebdd0;font-size:13.5px;font-weight:600;transition:.13s;position:relative;width:100%;text-align:left}
+.nav-it:hover{background:rgba(255,255,255,.06);color:#fff}
+.nav-it.on{background:rgba(45,212,191,.13);color:#7ff0e3}
+.nav-it.on::before{content:"";position:absolute;left:-12px;top:8px;bottom:8px;width:3px;border-radius:0 3px 3px 0;background:#2dd4bf}
+.nav-it .nv-badge{margin-left:auto;background:#ef4444;color:#fff;font-size:10px;font-weight:800;min-width:18px;height:18px;border-radius:9px;display:grid;place-items:center;padding:0 5px}
+.side-foot{border-top:1px solid var(--navy-line);padding:12px}
+.who{display:flex;align-items:center;gap:10px;width:100%;padding:8px;border-radius:10px;text-align:left;transition:.13s}
+.who:hover{background:rgba(255,255,255,.06)}
+.who .wn{font-size:13px;font-weight:700;color:#fff}
+.who .wr{font-size:11px;color:#6d829c;text-transform:capitalize}
+.who .out{margin-left:auto;color:#6d829c}
+.who:hover .out{color:#f87171}
+.avatar{width:34px;height:34px;border-radius:50%;display:grid;place-items:center;color:#fff;font-weight:800;font-size:12.5px;flex:none;letter-spacing:.02em}
+.avatar.sm{width:26px;height:26px;font-size:10px}
+.avatar.lg{width:44px;height:44px;font-size:15px}
+
+.main{min-width:0;display:flex;flex-direction:column}
+.topbar{height:62px;background:var(--surface);border-bottom:1px solid var(--border);display:flex;align-items:center;gap:14px;padding:0 22px;position:sticky;top:0;z-index:40}
+.tb-title{min-width:0}
+.tb-title h1{font-size:16.5px;font-weight:800;letter-spacing:-.01em;white-space:nowrap}
+.tb-title p{font-size:12px;color:var(--mut);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.tb-right{margin-left:auto;display:flex;align-items:center;gap:10px}
+.gsearch{display:flex;align-items:center;gap:8px;background:#f2f5f9;border:1.5px solid transparent;border-radius:10px;padding:7.5px 12px;width:250px;transition:.15s;color:var(--mut)}
+.gsearch:focus-within{border-color:var(--accent);background:#fff;box-shadow:0 0 0 3px rgba(13,148,136,.12)}
+.gsearch input{border:none;outline:none;background:transparent;flex:1;font-size:13px}
+.demo-chip{font-size:10.5px;font-weight:800;letter-spacing:.08em;color:var(--amber-ink);background:var(--amber-bg);border:1px solid #f3ddb0;border-radius:6px;padding:3px 8px}
+.icon-btn{width:38px;height:38px;border-radius:10px;display:grid;place-items:center;color:var(--ink2);border:1.5px solid var(--border);background:#fff;position:relative;transition:.13s}
+.icon-btn:hover{border-color:#c9d4e0;background:#f8fafc}
+.icon-btn .nb{position:absolute;top:-5px;right:-5px;background:#ef4444;color:#fff;font-size:9.5px;font-weight:800;min-width:16px;height:16px;border-radius:8px;display:grid;place-items:center;padding:0 4px;border:2px solid #fff}
+
+.view{padding:22px;max-width:1460px;width:100%;margin:0 auto;flex:1}
+
+/* ============================ CARDS / KPI ============================ */
+.card{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);box-shadow:var(--shadow)}
+.card-h{display:flex;align-items:center;gap:10px;padding:14px 18px;border-bottom:1px solid var(--border2)}
+.card-h h3{font-size:14px;font-weight:800;letter-spacing:-.01em}
+.card-h .sub{font-size:12px;color:var(--mut)}
+.card-h .right{margin-left:auto;display:flex;gap:8px;align-items:center}
+.card-b{padding:16px 18px}
+.kpis{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:16px}
+.kpi{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);box-shadow:var(--shadow);padding:16px 18px;display:flex;flex-direction:column;gap:2px;position:relative;overflow:hidden}
+.kpi::before{content:"";position:absolute;left:0;top:0;bottom:0;width:3.5px;background:var(--kc,var(--accent))}
+.kpi .k-label{font-size:11px;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:var(--mut)}
+.kpi .k-row{display:flex;align-items:flex-end;gap:10px}
+.kpi .k-num{font-size:28px;font-weight:800;letter-spacing:-.02em;font-variant-numeric:tabular-nums;line-height:1.15}
+.kpi .k-chip{margin-bottom:5px}
+.kpi .k-sub{font-size:12px;color:var(--mut)}
+.kpi .k-spark{position:absolute;right:14px;top:14px;opacity:.9}
+
+/* ============================ CHIPS / BADGES ============================ */
+.chip{display:inline-flex;align-items:center;gap:6px;font-size:11px;font-weight:700;border-radius:999px;padding:3px 9px;white-space:nowrap;line-height:1.5}
+.chip .cdot{width:6px;height:6px;border-radius:50%;background:currentColor}
+.chip-slate{background:var(--slate-bg);color:#475569}
+.chip-teal{background:var(--teal-bg);color:var(--accent-ink)}
+.chip-indigo{background:var(--indigo-bg);color:var(--indigo)}
+.chip-blue{background:var(--blue-bg);color:var(--blue)}
+.chip-cyan{background:var(--cyan-bg);color:var(--cyan)}
+.chip-amber{background:var(--amber-bg);color:var(--amber-ink)}
+.chip-red{background:var(--red-bg);color:var(--red-ink)}
+.chip-green{background:var(--green-bg);color:var(--green)}
+.chip-violet{background:var(--violet-bg);color:var(--violet)}
+.chip-outline{background:#fff;border:1px solid var(--border);color:var(--ink2)}
+.chip-pulse{position:relative}
+.chip-pulse::after{content:"";width:6px;height:6px;border-radius:50%;background:currentColor;animation:pulse 1.6s infinite}
+@keyframes pulse{0%{box-shadow:0 0 0 0 rgba(220,38,38,.45)}70%{box-shadow:0 0 0 6px rgba(220,38,38,0)}100%{box-shadow:0 0 0 0 rgba(220,38,38,0)}}
+.role-badge{font-size:10px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;border-radius:5px;padding:2.5px 6px}
+.role-logistics{background:var(--teal-bg);color:var(--accent-ink)}
+.role-merchandising{background:var(--violet-bg);color:var(--violet)}
+.role-admin{background:var(--slate-bg);color:#475569}
+
+/* ============================ BUTTONS ============================ */
+.btn{display:inline-flex;align-items:center;gap:7px;font-size:13px;font-weight:700;border-radius:9px;padding:8.5px 14px;transition:.14s;border:1.5px solid transparent}
+.btn-primary{background:var(--accent);color:#fff}
+.btn-primary:hover{background:var(--accent2);box-shadow:0 4px 12px rgba(13,148,136,.35)}
+.btn-soft{background:var(--accent-soft);color:var(--accent-ink)}
+.btn-soft:hover{background:#d3ecea}
+.btn-ghost{border-color:var(--border);background:#fff;color:var(--ink2)}
+.btn-ghost:hover{border-color:#c9d4e0;background:#f8fafc}
+.btn-danger{background:var(--red-bg);color:var(--red-ink)}
+.btn-danger:hover{background:#fbdbdb}
+.btn-sm{padding:5.5px 10px;font-size:12px;border-radius:7px}
+.btn[disabled]{opacity:.5;cursor:not-allowed}
+.lock-tip{display:inline-flex;align-items:center;gap:5px;font-size:11px;color:var(--faint)}
+
+/* ============================ TOOLBAR / TABLE ============================ */
+.toolbar{display:flex;align-items:center;gap:10px;margin-bottom:14px;flex-wrap:wrap}
+.toolbar .count{font-size:12.5px;color:var(--mut);margin-left:auto}
+.tsearch{display:flex;align-items:center;gap:8px;background:#fff;border:1.5px solid var(--border);border-radius:9px;padding:7.5px 12px;width:230px;color:var(--mut)}
+.tsearch:focus-within{border-color:var(--accent);box-shadow:0 0 0 3px rgba(13,148,136,.1)}
+.tsearch input{border:none;outline:none;flex:1;background:transparent;font-size:13px}
+.tsel{background:#fff;border:1.5px solid var(--border);border-radius:9px;padding:7.5px 10px;font-size:13px;font-weight:600;color:var(--ink2);outline:none}
+.tsel:focus{border-color:var(--accent)}
+.tablewrap{overflow:auto;border-radius:var(--r)}
+table{width:100%;border-collapse:collapse;font-size:13px}
+thead th{font-size:10.5px;font-weight:800;letter-spacing:.07em;text-transform:uppercase;color:var(--mut);text-align:left;padding:10px 14px;background:#f8fafc;border-bottom:1px solid var(--border);position:sticky;top:0;z-index:2;white-space:nowrap}
+tbody td{padding:11px 14px;border-bottom:1px solid var(--border2);vertical-align:middle}
+tbody tr{transition:.1s}
+tbody tr:hover{background:#f7fafc}
+tbody tr.click{cursor:pointer}
+td .mono, .mono{font-family:var(--mono);font-size:12px}
+.td-main{font-weight:700}
+.td-sub{font-size:11.5px;color:var(--mut);margin-top:1px}
+.num{font-variant-numeric:tabular-nums;text-align:right}
+th.num{text-align:right}
+.route{display:inline-flex;align-items:center;gap:7px;font-weight:700;font-size:12px;font-family:var(--mono);white-space:nowrap}
+.route .sep{color:#c3cdd9;display:flex;align-items:center;gap:2px}
+.prog{width:86px;height:6px;background:#e9edf2;border-radius:4px;overflow:hidden}
+.prog i{display:block;height:100%;border-radius:4px;background:var(--accent);transition:width .3s}
+.prog.warn i{background:var(--amber)}
+.days-chip{font-variant-numeric:tabular-nums;font-weight:800}
+.text-red{color:var(--red)}
+.text-amber{color:var(--amber)}
+.text-green{color:var(--green)}
+.text-mut{color:var(--mut)}
+.docring{display:inline-grid;place-items:center;position:relative}
+.docring span{position:absolute;font-size:9.5px;font-weight:800;color:var(--ink2)}
+
+/* ============================ DASHBOARD ============================ */
+.grid-2{display:grid;grid-template-columns:1.6fr 1fr;gap:16px;margin-bottom:16px}
+.grid-2e{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:16px}
+.eta-strip{display:flex;gap:18px;overflow-x:auto;padding:4px 2px 8px}
+.eta-week{flex:0 0 auto;min-width:250px}
+.eta-week h4{font-size:11px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;color:var(--mut);margin:0 0 9px;display:flex;gap:8px;align-items:center}
+.eta-week h4 .wnum{background:var(--accent-soft);color:var(--accent-ink);border-radius:6px;padding:1px 7px;font-size:10.5px}
+.eta-chips{display:flex;flex-direction:column;gap:7px}
+.eta-chip{display:flex;align-items:center;gap:9px;background:#f8fafc;border:1px solid var(--border2);border-radius:10px;padding:8px 11px;width:100%;text-align:left;transition:.13s}
+.eta-chip:hover{border-color:var(--accent);background:#f5fdfc;transform:translateY(-1px);box-shadow:var(--shadow)}
+.eta-chip .ec-id{font-weight:800;font-size:12px;font-family:var(--mono)}
+.eta-chip .ec-sub{font-size:11px;color:var(--mut)}
+.eta-chip .ec-right{margin-left:auto;text-align:right}
+.act-list{display:flex;flex-direction:column}
+.act-it{display:flex;gap:12px;padding:11px 18px;border-bottom:1px solid var(--border2);align-items:flex-start}
+.act-it:last-child{border-bottom:none}
+.act-it .ai-ic{flex:0 0 34px;height:34px;border-radius:9px;display:grid;place-items:center}
+.ai-red{background:var(--red-bg);color:var(--red)}
+.ai-amber{background:var(--amber-bg);color:var(--amber)}
+.ai-violet{background:var(--violet-bg);color:var(--violet)}
+.ai-teal{background:var(--teal-bg);color:var(--accent-ink)}
+.ai-slate{background:var(--slate-bg);color:var(--slate)}
+.act-it .ai-t{font-size:13px;font-weight:700}
+.act-it .ai-s{font-size:12px;color:var(--mut);margin-top:1px}
+.act-it .ai-btn{margin-left:auto;flex:none}
+.empty{padding:34px;text-align:center;color:var(--faint);font-size:13px}
+
+/* ============================ FEED ============================ */
+.feed-day{font-size:11px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:var(--faint);padding:14px 18px 6px}
+.feed-it{display:flex;gap:12px;padding:10px 18px;border-bottom:1px solid var(--border2)}
+.feed-it:last-child{border:none}
+.feed-it .f-ic{flex:0 0 32px;height:32px;border-radius:9px;display:grid;place-items:center}
+.feed-it .f-txt{font-size:13px;color:var(--ink2);min-width:0}
+.feed-it .f-txt b{color:var(--ink)}
+.feed-it .f-ref{font-family:var(--mono);font-size:11.5px;font-weight:700;color:var(--accent-ink);background:var(--accent-soft);padding:1px 6px;border-radius:5px;cursor:pointer}
+.feed-it .f-ref:hover{background:#d3ecea}
+.feed-it .f-time{font-size:11px;color:var(--faint);margin-left:auto;flex:none;padding-top:2px}
+
+/* ============================ BOARD (samples) ============================ */
+.board{display:grid;grid-template-columns:repeat(6,minmax(215px,1fr));gap:12px;overflow-x:auto;align-items:start;padding-bottom:8px}
+.bcol{background:#eef1f5;border-radius:var(--r);padding:10px;min-height:120px}
+.bcol-h{display:flex;align-items:center;gap:8px;padding:2px 6px 10px;font-size:11.5px;font-weight:800;letter-spacing:.04em;text-transform:uppercase;color:var(--ink2)}
+.bcol-h .cnt{background:#dde3ea;color:var(--ink2);border-radius:6px;font-size:10.5px;padding:1px 7px}
+.bcol-h .bdot{width:8px;height:8px;border-radius:50%}
+.scard{background:#fff;border:1px solid var(--border);border-radius:10px;padding:12px 13px;margin-bottom:9px;box-shadow:var(--shadow);cursor:pointer;transition:.13s;position:relative}
+.scard:hover{transform:translateY(-2px);box-shadow:var(--shadow-lg);border-color:#cdd9e5}
+.scard .sc-top{display:flex;align-items:center;gap:7px;margin-bottom:5px}
+.scard .sc-id{font-family:var(--mono);font-weight:800;font-size:11.5px;color:var(--accent-ink)}
+.scard .sc-name{font-weight:700;font-size:13px;line-height:1.3}
+.scard .sc-style{font-size:11.5px;color:var(--mut);font-family:var(--mono)}
+.scard .sc-meta{display:flex;flex-wrap:wrap;gap:6px;margin-top:9px;align-items:center}
+.scard .sc-foot{display:flex;align-items:center;gap:7px;margin-top:10px;padding-top:9px;border-top:1px dashed var(--border2);font-size:11px;color:var(--mut)}
+.scard.overdue{border-left:3px solid var(--red)}
+.scard.due-soon{border-left:3px solid var(--amber)}
+.scard.ok{border-left:3px solid #cbd5e1}
+
+/* ============================ MODAL ============================ */
+.ovl{position:fixed;inset:0;background:rgba(10,17,30,.52);backdrop-filter:blur(3px);display:flex;align-items:flex-start;justify-content:center;padding:4vh 20px;z-index:100;overflow:auto}
+.modal{background:#fff;border-radius:16px;box-shadow:var(--shadow-lg);width:100%;max-width:960px;animation:pop .18s ease}
+.modal.narrow{max-width:520px}
+.modal.mid{max-width:700px}
+@keyframes pop{from{transform:translateY(10px) scale(.985);opacity:0}to{transform:none;opacity:1}}
+.m-h{display:flex;align-items:flex-start;gap:14px;padding:20px 24px 16px;border-bottom:1px solid var(--border2)}
+.m-h h2{font-size:18px;font-weight:800;letter-spacing:-.01em;display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.m-h .m-sub{font-size:12.5px;color:var(--mut);margin-top:3px}
+.m-h .m-x{margin-left:auto;flex:none}
+.m-b{padding:20px 24px;max-height:66vh;overflow:auto}
+.m-f{display:flex;gap:10px;justify-content:flex-end;padding:14px 24px;border-top:1px solid var(--border2);background:#fafbfd;border-radius:0 0 16px 16px}
+.tabs{display:flex;gap:2px;padding:0 24px;border-bottom:1px solid var(--border2)}
+.tab{padding:11px 14px;font-size:13px;font-weight:700;color:var(--mut);border-bottom:2.5px solid transparent;margin-bottom:-1px}
+.tab.on{color:var(--accent-ink);border-color:var(--accent)}
+.tab .tn{background:var(--slate-bg);border-radius:5px;font-size:10.5px;padding:1px 6px;margin-left:5px}
+
+/* facts grid */
+.facts{display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:var(--border2);border:1px solid var(--border2);border-radius:12px;overflow:hidden}
+.fact{background:#fff;padding:12px 15px}
+.fact .f-k{font-size:10.5px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;color:var(--faint)}
+.fact .f-v{font-size:13.5px;font-weight:700;margin-top:3px}
+.fact .f-v .mono{font-size:12.5px}
+
+/* route visual */
+.routeviz{display:flex;align-items:center;gap:10px;background:#f8fafc;border:1px solid var(--border2);border-radius:12px;padding:16px 18px;margin-top:14px;flex-wrap:wrap}
+.rv-node{text-align:center}
+.rv-node .rv-code{font-family:var(--mono);font-weight:800;font-size:14px}
+.rv-node .rv-name{font-size:10.5px;color:var(--mut);margin-top:1px}
+.rv-line{flex:1;min-width:90px;height:2px;background:repeating-linear-gradient(90deg,#9fb3c8 0 7px,transparent 7px 13px);position:relative}
+.rv-line i{position:absolute;top:-11px;left:50%;transform:translateX(-50%);color:var(--accent);background:#f8fafc;padding:0 6px}
+.rv-via{font-size:10.5px;color:var(--mut);background:#eef2f7;border:1px dashed #c9d4e0;border-radius:6px;padding:2px 8px;font-family:var(--mono);font-weight:700}
+
+/* eta history timeline */
+.tl{margin-top:14px;padding-left:6px}
+.tl-it{display:flex;gap:13px;position:relative;padding-bottom:16px}
+.tl-it::before{content:"";position:absolute;left:5.5px;top:18px;bottom:0;width:2px;background:var(--border)}
+.tl-it:last-child::before{display:none}
+.tl-dot{width:13px;height:13px;border-radius:50%;background:#fff;border:3.5px solid var(--accent);flex:none;margin-top:3px;z-index:1}
+.tl-dot.old{border-color:#cbd5e1}
+.tl-t{font-size:13px}
+.tl-t b{font-family:var(--mono)}
+.tl-s{font-size:12px;color:var(--mut);margin-top:1px}
+
+/* docs checklist */
+.doc-row{display:flex;align-items:center;gap:12px;padding:11px 14px;border:1px solid var(--border2);border-radius:10px;margin-bottom:8px;transition:.13s}
+.doc-row.done{background:#f4fbf6;border-color:#d3ecd9}
+.doc-check{width:22px;height:22px;border-radius:7px;border:2px solid #cbd5e1;display:grid;place-items:center;color:#fff;flex:none;transition:.13s}
+.doc-row.done .doc-check{background:var(--green);border-color:var(--green)}
+.doc-check input{display:none}
+.doc-name{font-weight:700;font-size:13px}
+
+/* comments */
+.cm{display:flex;gap:11px;margin-bottom:16px}
+.cm-bubble{background:#f5f8fb;border:1px solid var(--border2);border-radius:4px 14px 14px 14px;padding:10px 14px;font-size:13px;min-width:0}
+.cm-h{display:flex;align-items:center;gap:8px;margin-bottom:4px}
+.cm-h b{font-size:12.5px}
+.cm-h time{font-size:11px;color:var(--faint)}
+.cm-input{display:flex;gap:10px;align-items:flex-start;margin-top:6px}
+.cm-input textarea{flex:1;border:1.5px solid var(--border);border-radius:11px;padding:10px 13px;resize:none;outline:none;min-height:44px;max-height:120px;font-size:13px;background:#fff}
+.cm-input textarea:focus{border-color:var(--accent);box-shadow:0 0 0 3px rgba(13,148,136,.1)}
+
+/* forms */
+.frm{display:grid;gap:14px}
+.frm .frow{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.fld label{display:block;font-size:12px;font-weight:700;color:var(--ink2);margin-bottom:5px}
+.fld label .req{color:var(--red)}
+.fld input,.fld select,.fld textarea{width:100%;border:1.5px solid var(--border);border-radius:9px;padding:9px 12px;outline:none;background:#fff;transition:.13s}
+.fld input:focus,.fld select:focus,.fld textarea:focus{border-color:var(--accent);box-shadow:0 0 0 3px rgba(13,148,136,.1)}
+.fld .fhelp{font-size:11.5px;color:var(--faint);margin-top:4px}
+
+/* ============================ TOASTS ============================ */
+#toasts{position:fixed;bottom:22px;right:22px;display:flex;flex-direction:column;gap:9px;z-index:200}
+.toast{background:#101c2f;color:#e8eef6;border-radius:11px;padding:12px 16px;font-size:13px;font-weight:600;box-shadow:var(--shadow-lg);display:flex;gap:10px;align-items:center;animation:tin .22s ease;max-width:380px}
+.toast.ok .t-ic{color:#34d399}.toast.err .t-ic{color:#f87171}
+@keyframes tin{from{transform:translateY(8px);opacity:0}to{transform:none;opacity:1}}
+
+/* notif dropdown */
+.notif-pop{position:absolute;top:50px;right:0;width:390px;background:#fff;border:1px solid var(--border);border-radius:14px;box-shadow:var(--shadow-lg);z-index:80;overflow:hidden;animation:pop .15s ease}
+.np-h{padding:13px 16px;border-bottom:1px solid var(--border2);font-size:13.5px;font-weight:800;display:flex;justify-content:space-between;align-items:center}
+.np-list{max-height:420px;overflow:auto}
+.np-it{display:flex;gap:11px;padding:11px 16px;border-bottom:1px solid var(--border2);cursor:pointer;transition:.1s}
+.np-it:hover{background:#f7fafc}
+.np-it:last-child{border:none}
+.np-t{font-size:12.8px;font-weight:700}
+.np-s{font-size:11.8px;color:var(--mut);margin-top:1px}
+
+/* misc */
+.link{color:var(--accent-ink);font-weight:700;cursor:pointer}
+.link:hover{text-decoration:underline}
+.sparkline{overflow:visible}
+.hbar-row{display:grid;grid-template-columns:190px 1fr 58px;gap:10px;align-items:center;margin-bottom:10px;font-size:12.5px}
+.hbar-track{height:20px;background:#f1f4f8;border-radius:6px;overflow:hidden}
+.hbar-fill{height:100%;border-radius:6px;display:flex;align-items:center;color:#fff;font-size:10.5px;font-weight:800;padding:0 8px;min-width:30px}
+.legend-dot{width:8px;height:8px;border-radius:50%;display:inline-block;margin-right:6px}
+.mut-line{border:none;border-top:1px solid var(--border2);margin:14px 0}
+.kv-inline{font-size:12px;color:var(--mut)}
+.kv-inline b{color:var(--ink)}
+
+@media (max-width:1180px){
+  .kpis{grid-template-columns:repeat(2,1fr)}
+  .grid-2,.grid-2e{grid-template-columns:1fr}
+  .facts{grid-template-columns:1fr 1fr}
+  .login{grid-template-columns:1fr}
+  .login-brand{display:none}
+  .gsearch{width:170px}
+}
+@media (max-width:760px){
+  .shell{grid-template-columns:64px 1fr}
+  .side-logo .t,.nav-it span.nl,.nav-sec,.side-foot .who .wn,.side-foot .who .wr{display:none}
+  .kpis{grid-template-columns:1fr}
+  .facts{grid-template-columns:1fr}
+  .gsearch{display:none}
+}
+
+</style>
+</head>
+<body>
+<div id="root"></div>
+<div id="modal-root"></div>
+<div id="toasts"></div>
+<script>
+/* ==================== SEED DATA (generated fresh each day) ==================== */
+'use strict';
+/* FlexKnit Link — demo seed data generator.
+   All dates are generated relative to "today" so the demo always looks live. */
+
+const DAY = 864e5;
+const d = (off) => { const t = new Date(); t.setHours(12, 0, 0, 0); return new Date(t.getTime() + off * DAY).toISOString().slice(0, 10); };
+const ts = (h) => new Date(Date.now() - h * 36e5).toISOString();
+
+function build() {
+  const users = [
+    { id: 'u1', name: 'Hery Randria',   role: 'logistics',     title: 'Logistics Lead',            color: '#0d9488' },
+    { id: 'u2', name: 'Miora Rakoto',   role: 'logistics',     title: 'Import Coordinator',        color: '#0284c7' },
+    { id: 'u3', name: 'Naina Andriama', role: 'logistics',     title: 'Customs & Documentation',   color: '#d97706' },
+    { id: 'u4', name: 'Lova Rasoa',     role: 'merchandising', title: 'Merch Manager — EU/UK',     color: '#7c3aed' },
+    { id: 'u5', name: 'Tojo Rajaon',    role: 'merchandising', title: 'Merchandiser — US',         color: '#db2777' },
+    { id: 'u6', name: 'Faniry Rasolo',  role: 'merchandising', title: 'Merchandiser — Knitwear',   color: '#4f46e5' },
+    { id: 'u7', name: 'Rado Rakotobe',  role: 'admin',         title: 'Operations Director',       color: '#475569' }
+  ];
+
+  const catalog = {
+    buyers: ['M&S', 'UNIQLO', 'H&M', 'ZARA', 'Tommy Hilfiger', 'GAP', 'Decathlon'],
+    suppliers: [
+      { name: 'Consinee Group',   country: 'China', city: 'Ningbo' },
+      { name: 'ERDOS Group',      country: 'China', city: 'Ordos' },
+      { name: 'Newtimes Group',   country: 'China', city: 'Dongguan' },
+      { name: 'Zhejiang Xinao',   country: 'China', city: 'Tongxiang' },
+      { name: 'YKK (Shanghai)',   country: 'China', city: 'Shanghai' },
+      { name: 'SBS Zipper',       country: 'China', city: 'Xiamen' },
+      { name: 'Botany Trims',     country: 'China', city: 'Wenzhou' },
+      { name: 'Label One',        country: 'China', city: 'Guangzhou' },
+      { name: 'MadaPack SARL',    country: 'Madagascar', city: 'Antananarivo' },
+      { name: 'Papier Agencies',  country: 'Madagascar', city: 'Antananarivo' }
+    ],
+    pols: [
+      { code: 'CNNGB', name: 'Ningbo' }, { code: 'CNSHA', name: 'Shanghai' }, { code: 'CNYTN', name: 'Yantian' },
+      { code: 'CNTAO', name: 'Qingdao' }, { code: 'CNXMN', name: 'Xiamen' }, { code: 'CNWNZ', name: 'Wenzhou' }
+    ],
+    pods: [{ code: 'MGTMM', name: 'Toamasina' }, { code: 'TNR', name: 'Antananarivo · Ivato (air)' }],
+    vias: [{ code: 'LKCMB', name: 'Colombo' }, { code: 'SGSIN', name: 'Singapore' }, { code: 'DJJIB', name: 'Djibouti' }, { code: 'MUPMR', name: 'Port Louis' }],
+    shipmentStatuses: ['Booked', 'In Production', 'Ready to Ship', 'In Transit', 'Transshipment', 'Customs – Toamasina', 'Customs – Ivato', 'Cleared – Inland', 'Received'],
+    delayReasons: [
+      { code: 'D01', label: 'Vessel schedule change',        cat: 'Carrier' },
+      { code: 'D02', label: 'Transshipment port congestion', cat: 'Carrier' },
+      { code: 'D03', label: 'Customs inspection hold',       cat: 'Customs' },
+      { code: 'D04', label: 'Documentation mismatch',        cat: 'Documents' },
+      { code: 'D05', label: 'Yarn dye-lot / quality re-check', cat: 'Supplier' },
+      { code: 'D06', label: 'Holiday backlog (CNY)',         cat: 'Calendar' },
+      { code: 'D07', label: 'Weather / port closure',        cat: 'Force majeure' },
+      { code: 'D08', label: 'Booking rollover',              cat: 'Carrier' },
+      { code: 'D09', label: 'Inland transport breakdown',    cat: 'Local' }
+    ],
+    sampleTypes: ['Proto', 'Fit', 'PP', 'Size Set', 'TOP', 'SMS', 'Shipment'],
+    sampleStatuses: ['Requested', 'In Development', 'Courier Out', 'Under Review', 'Approved', 'Redo'],
+    accStatuses: ['Planned', 'Ordered', 'In Transit', 'Received', 'Shortage'],
+    docs: [
+      { key: 'ci',   label: 'Commercial Invoice' },
+      { key: 'pl',   label: 'Packing List' },
+      { key: 'bl',   label: 'Bill of Lading / AWB' },
+      { key: 'co',   label: 'Certificate of Origin' },
+      { key: 'msds', label: 'MSDS / Fiber content' },
+      { key: 'sgs',  label: 'SGS Inspection Certificate' }
+    ]
+  };
+
+  const shipments = [
+    {
+      id: 'SHP-2026-1042', po: 'PO-26118', buyer: 'M&S', supplier: { name: 'Consinee Group', country: 'China', city: 'Ningbo' },
+      commodity: '100% Cashmere 28/2 · Grade A', qtyKg: 6400, valueUsd: 486000, incoterm: 'FOB', mode: 'Sea',
+      pol: 'CNNGB', pod: 'MGTMM', via: 'LKCMB', carrier: 'Maersk', vessel: 'MAERSK SELETAR V.032E', container: 'MSKU 8829147 · 1×40HQ',
+      etd: d(-16), eta: d(5), ata: null, status: 'In Transit', delayed: false, delayReason: null, delayNote: '', progress: 62,
+      mbl: 'MAEU-260114875', docs: { ci: true, pl: true, bl: true, co: false, msds: true, sgs: false },
+      etaHistory: [
+        { eta: d(1),  on: d(-20), by: 'u2', note: 'Initial carrier schedule' },
+        { eta: d(5),  on: d(-6),  by: 'u2', note: '+4d — Colombo transshipment congestion (carrier advisory)' }
+      ],
+      comments: [
+        { id: 'c1', by: 'u4', text: 'Hi team — the FW26 W39 knit slot for M&S depends on this cashmere lot. Can you confirm the revised ETA and docs status?', at: ts(120) },
+        { id: 'c2', by: 'u2', text: 'Confirmed: ETA ' + d(5) + ' after Colombo congestion (+4d). Certificate of Origin pending from Consinee — requested this morning.', at: ts(96) }
+      ]
+    },
+    {
+      id: 'SHP-2026-1043', po: 'PO-26122', buyer: 'UNIQLO', supplier: { name: 'ERDOS Group', country: 'China', city: 'Ordos' },
+      commodity: 'Extrafine Merino 70/2 · 19.5µ', qtyKg: 12500, valueUsd: 298000, incoterm: 'CIF', mode: 'Sea',
+      pol: 'CNTAO', pod: 'MGTMM', via: 'SGSIN', carrier: 'COSCO', vessel: 'COSCO HELLAS V.118W', container: 'COSU 6412208 · 2×40HQ',
+      etd: d(-9), eta: d(12), ata: null, status: 'In Transit', delayed: false, delayReason: null, delayNote: '', progress: 55,
+      mbl: 'COSU-661204918', docs: { ci: true, pl: true, bl: true, co: true, msds: true, sgs: false },
+      etaHistory: [{ eta: d(12), on: d(-14), by: 'u2', note: 'Initial carrier schedule' }],
+      comments: [{ id: 'c3', by: 'u6', text: 'This covers the UNIQLO rib program. Please book the SGS inspection early this time — last lot cleared without it and we lost a week.', at: ts(60) }]
+    },
+    {
+      id: 'SHP-2026-1044', po: 'PO-26097', buyer: 'ZARA', supplier: { name: 'Newtimes Group', country: 'China', city: 'Dongguan' },
+      commodity: 'Acrylic 50/2 + Lurex blend', qtyKg: 18000, valueUsd: 121000, incoterm: 'FOB', mode: 'Sea',
+      pol: 'CNYTN', pod: 'MGTMM', via: 'DJJIB', carrier: 'CMA CGM', vessel: 'CMA CGM BALI V.0MW', container: 'CMAU 2218764 · 1×40HQ',
+      etd: d(-30), eta: d(-8), ata: d(-8), status: 'Customs – Toamasina', delayed: true, delayReason: 'D03', delayNote: 'Container selected for scanner inspection — queue ~3 working days at Toamasina terminal.', progress: 85,
+      mbl: 'CMDU-2481763', docs: { ci: true, pl: true, bl: true, co: true, msds: true, sgs: true },
+      etaHistory: [
+        { eta: d(-12), on: d(-45), by: 'u2', note: 'Initial carrier schedule' },
+        { eta: d(-8),  on: d(-12), by: 'u2', note: '+4d — Djibouti port congestion' }
+      ],
+      comments: [
+        { id: 'c4', by: 'u3', text: 'Container selected for scanner inspection at Toamasina — queue ~3 days. Pre-alert already filed with the broker, duty files ready.', at: ts(72) },
+        { id: 'c5', by: 'u4', text: 'This acrylic lot feeds the Zara W38 loading plan. Is there a priority lane option? Please advise before Thursday.', at: ts(48) }
+      ]
+    },
+    {
+      id: 'SHP-2026-1045', po: 'PO-26130', buyer: 'Tommy Hilfiger', supplier: { name: 'YKK (Shanghai)', country: 'China', city: 'Shanghai' },
+      commodity: 'Zippers & pullers — PP trim lot', qtyKg: 620, valueUsd: 18400, incoterm: 'FOB', mode: 'Air',
+      pol: 'CNSHA', pod: 'TNR', via: null, carrier: 'Ethiopian Cargo', vessel: 'ET Cargo · via ADD', container: 'AWB 071-88239145',
+      etd: d(-2), eta: d(2), ata: null, status: 'In Transit', delayed: false, delayReason: null, delayNote: '', progress: 75,
+      mbl: '071-88239145', docs: { ci: true, pl: true, bl: true, co: false, msds: false, sgs: false },
+      etaHistory: [{ eta: d(2), on: d(-6), by: 'u3', note: 'Air booking confirmed — ADD routing' }],
+      comments: []
+    },
+    {
+      id: 'SHP-2026-1046', po: 'PO-26125', buyer: 'H&M', supplier: { name: 'Zhejiang Xinao', country: 'China', city: 'Tongxiang' },
+      commodity: 'Cotton slub 10/2 · BCI', qtyKg: 22000, valueUsd: 96500, incoterm: 'FOB', mode: 'Sea',
+      pol: 'CNSHA', pod: 'MGTMM', via: 'SGSIN', carrier: 'MSC', vessel: 'MSC AMBITION V.243W', container: 'MSKU 5510938 · 1×40HQ + 1×20',
+      etd: d(-3), eta: d(21), ata: null, status: 'In Transit', delayed: false, delayReason: null, delayNote: '', progress: 45,
+      mbl: 'MSCU-7702934', docs: { ci: true, pl: false, bl: false, co: false, msds: true, sgs: false },
+      etaHistory: [{ eta: d(21), on: d(-9), by: 'u2', note: 'Initial carrier schedule' }],
+      comments: []
+    },
+    {
+      id: 'SHP-2026-1047', po: 'PO-26131', buyer: 'GAP', supplier: { name: 'SBS Zipper', country: 'China', city: 'Xiamen' },
+      commodity: 'Nylon zippers 15–20cm · navy/olive', qtyKg: 3400, valueUsd: 27800, incoterm: 'FOB', mode: 'Sea',
+      pol: 'CNXMN', pod: 'MGTMM', via: 'LKCMB', carrier: 'OOCL', vessel: 'OOCL SPAIN V.041W', container: 'Booking pending',
+      etd: d(9), eta: d(34), ata: null, status: 'Booked', delayed: false, delayReason: null, delayNote: '', progress: 10,
+      mbl: '', docs: { ci: false, pl: false, bl: false, co: false, msds: false, sgs: false },
+      etaHistory: [{ eta: d(34), on: d(-4), by: 'u2', note: 'Booking confirmed with OOCL' }],
+      comments: []
+    },
+    {
+      id: 'SHP-2026-1048', po: 'PO-26133', buyer: 'M&S', supplier: { name: 'Consinee Group', country: 'China', city: 'Ningbo' },
+      commodity: 'Cashmere/Nylon 2/26 · FW26 core', qtyKg: 5100, valueUsd: 392000, incoterm: 'FOB', mode: 'Sea',
+      pol: 'CNNGB', pod: 'MGTMM', via: 'LKCMB', carrier: 'Maersk', vessel: 'Booking pending', container: 'Pending',
+      etd: d(14), eta: d(46), ata: null, status: 'In Production', delayed: false, delayReason: null, delayNote: '', progress: 25,
+      mbl: '', docs: { ci: false, pl: false, bl: false, co: false, msds: false, sgs: false },
+      etaHistory: [{ eta: d(46), on: d(-2), by: 'u2', note: 'Estimated on production plan' }],
+      comments: [{ id: 'c6', by: 'u4', text: 'Flagging early: M&S wants a mid-November floor start, so latest receipt at factory is ' + d(40) + '. Inland + QC needs 5 days after clearance.', at: ts(20) }]
+    },
+    {
+      id: 'SHP-2026-1049', po: 'PO-26101', buyer: 'Decathlon', supplier: { name: 'Botany Trims', country: 'China', city: 'Wenzhou' },
+      commodity: 'Corozo buttons 20L · walnut dye', qtyKg: 900, valueUsd: 9200, incoterm: 'FOB', mode: 'Sea',
+      pol: 'CNWNZ', pod: 'MGTMM', via: 'LKCMB', carrier: 'ONE', vessel: 'ONE COMMITMENT V.019W', container: 'ONEU 4408127 · 1×20',
+      etd: d(-18), eta: d(3), ata: null, status: 'Transshipment', delayed: true, delayReason: 'D02', delayNote: 'Colombo feeder connection missed — rolled to next feeder, +3d.', progress: 68,
+      mbl: 'ONEY-8831207', docs: { ci: true, pl: true, bl: true, co: true, msds: true, sgs: false },
+      etaHistory: [
+        { eta: d(0),  on: d(-30), by: 'u2', note: 'Initial carrier schedule' },
+        { eta: d(3),  on: d(-5),  by: 'u2', note: '+3d — Colombo feeder rollover' }
+      ],
+      comments: [{ id: 'c7', by: 'u5', text: 'Buttons needed on the floor by ' + d(8) + ' for the Decathlon line loading. Will ETA ' + d(3) + ' + 2d inland + QC still make it?', at: ts(30) }]
+    },
+    {
+      id: 'SHP-2026-1050', po: 'PO-26134', buyer: 'UNIQLO', supplier: { name: 'ERDOS Group', country: 'China', city: 'Ordos' },
+      commodity: 'Yak/Cashmere blend 2/16 · capsule', qtyKg: 4200, valueUsd: 512000, incoterm: 'FOB', mode: 'Sea',
+      pol: 'CNTAO', pod: 'MGTMM', via: 'SGSIN', carrier: 'COSCO', vessel: 'Booking pending', container: 'Pending',
+      etd: d(21), eta: d(55), ata: null, status: 'Booked', delayed: false, delayReason: null, delayNote: '', progress: 8,
+      mbl: '', docs: { ci: false, pl: false, bl: false, co: false, msds: false, sgs: false },
+      etaHistory: [{ eta: d(55), on: d(-1), by: 'u1', note: 'Provisional — FY27 capsule' }],
+      comments: []
+    },
+    {
+      id: 'SHP-2026-1051', po: 'PO-26127', buyer: 'ZARA', supplier: { name: 'Newtimes Group', country: 'China', city: 'Dongguan' },
+      commodity: 'Cotton chenille 7/2 · SS27 dev', qtyKg: 9800, valueUsd: 64300, incoterm: 'FOB', mode: 'Sea',
+      pol: 'CNYTN', pod: 'MGTMM', via: 'LKCMB', carrier: 'Maersk', vessel: 'MAERSK SELETAR V.034E', container: 'Pending',
+      etd: d(4), eta: d(42), ata: null, status: 'Ready to Ship', delayed: false, delayReason: null, delayNote: '', progress: 40,
+      mbl: '', docs: { ci: false, pl: true, bl: false, co: false, msds: false, sgs: false },
+      etaHistory: [{ eta: d(42), on: d(-3), by: 'u2', note: 'On first sailing after CNY backlog clearance' }],
+      comments: []
+    },
+    /* ---- history (received) for KPIs & delay analytics ---- */
+    {
+      id: 'SHP-2026-1039', po: 'PO-26088', buyer: 'M&S', supplier: { name: 'Consinee Group', country: 'China', city: 'Ningbo' },
+      commodity: 'Recycled wool 2/14 · charcoal', qtyKg: 7600, valueUsd: 154000, incoterm: 'FOB', mode: 'Sea',
+      pol: 'CNNGB', pod: 'MGTMM', via: 'LKCMB', carrier: 'Maersk', vessel: 'MAERSK SELETAR V.028E', container: 'MSKU 7710224 · 1×40HQ',
+      etd: d(-52), eta: d(-12), ata: d(-14), status: 'Received', delayed: false, delayReason: null, delayNote: '', progress: 100,
+      mbl: 'MAEU-2599821', docs: { ci: true, pl: true, bl: true, co: true, msds: true, sgs: true }, etaHistory: [], comments: []
+    },
+    {
+      id: 'SHP-2026-1038', po: 'PO-26079', buyer: 'H&M', supplier: { name: 'Zhejiang Xinao', country: 'China', city: 'Tongxiang' },
+      commodity: 'Cotton 21/2 · ecru', qtyKg: 16800, valueUsd: 88200, incoterm: 'FOB', mode: 'Sea',
+      pol: 'CNSHA', pod: 'MGTMM', via: 'SGSIN', carrier: 'MSC', vessel: 'MSC VIGILANCE V.238W', container: 'MSCU 3306814 · 1×40HQ',
+      etd: d(-60), eta: d(-25), ata: d(-19), status: 'Received', delayed: true, delayReason: 'D07', delayNote: 'Shanghai port closed 3 days — typhoon weather anchorage.', progress: 100,
+      mbl: 'MSCU-6612204', docs: { ci: true, pl: true, bl: true, co: true, msds: true, sgs: true },
+      etaHistory: [{ eta: d(-25), on: d(-58), by: 'u2', note: 'Initial' }, { eta: d(-19), on: d(-30), by: 'u2', note: '+6d — typhoon closure Shanghai' }], comments: []
+    },
+    {
+      id: 'SHP-2026-1037', po: 'PO-26071', buyer: 'Tommy Hilfiger', supplier: { name: 'Newtimes Group', country: 'China', city: 'Dongguan' },
+      commodity: 'Merino 56/2 · navy melange', qtyKg: 8200, valueUsd: 171500, incoterm: 'CIF', mode: 'Sea',
+      pol: 'CNYTN', pod: 'MGTMM', via: 'SGSIN', carrier: 'CMA CGM', vessel: 'CMA CGM RACINE V.0TR', container: 'CMAU 9910742 · 1×40HQ',
+      etd: d(-58), eta: d(-22), ata: d(-22), status: 'Received', delayed: false, delayReason: null, delayNote: '', progress: 100,
+      mbl: 'CMDU-7701128', docs: { ci: true, pl: true, bl: true, co: true, msds: true, sgs: true }, etaHistory: [], comments: []
+    },
+    {
+      id: 'SHP-2026-1036', po: 'PO-26066', buyer: 'Decathlon', supplier: { name: 'ERDOS Group', country: 'China', city: 'Ordos' },
+      commodity: 'Cotton/Acrylic 30/1 · heather', qtyKg: 14200, valueUsd: 79300, incoterm: 'FOB', mode: 'Sea',
+      pol: 'CNTAO', pod: 'MGTMM', via: 'DJJIB', carrier: 'COSCO', vessel: 'COSCO EUROPE V.102W', container: 'COSU 2218404 · 2×40HQ',
+      etd: d(-65), eta: d(-33), ata: d(-33), status: 'Received', delayed: false, delayReason: null, delayNote: '', progress: 100,
+      mbl: 'COSU-1182947', docs: { ci: true, pl: true, bl: true, co: true, msds: true, sgs: true }, etaHistory: [], comments: []
+    },
+    {
+      id: 'SHP-2026-1035', po: 'PO-26058', buyer: 'ZARA', supplier: { name: 'Consinee Group', country: 'China', city: 'Ningbo' },
+      commodity: 'Cashmere 2/26 · camel', qtyKg: 3800, valueUsd: 296000, incoterm: 'FOB', mode: 'Sea',
+      pol: 'CNNGB', pod: 'MGTMM', via: 'LKCMB', carrier: 'Maersk', vessel: 'MAERSK ELBA V.026E', container: 'MSKU 4108872 · 1×40HQ',
+      etd: d(-84), eta: d(-48), ata: d(-41), status: 'Received', delayed: true, delayReason: 'D01', delayNote: 'Vessel omitted Colombo call — re-routed via Singapore, +7d.', progress: 100,
+      mbl: 'MAEU-2581047', docs: { ci: true, pl: true, bl: true, co: true, msds: true, sgs: true },
+      etaHistory: [{ eta: d(-48), on: d(-82), by: 'u2', note: 'Initial' }, { eta: d(-41), on: d(-55), by: 'u2', note: '+7d — Colombo omission, re-route SGSIN' }], comments: []
+    },
+    {
+      id: 'SHP-2026-1034', po: 'PO-26049', buyer: 'GAP', supplier: { name: 'Zhejiang Xinao', country: 'China', city: 'Tongxiang' },
+      commodity: 'Lambswool 3/16 · mix', qtyKg: 11400, valueUsd: 121900, incoterm: 'FOB', mode: 'Sea',
+      pol: 'CNSHA', pod: 'MGTMM', via: 'SGSIN', carrier: 'MSC', vessel: 'MSC LYRA V.230W', container: 'MSCU 8803241 · 1×40HQ',
+      etd: d(-91), eta: d(-56), ata: d(-52), status: 'Received', delayed: true, delayReason: 'D04', delayNote: 'CO description mismatch with CI — amended docs, customs release +4d.', progress: 100,
+      mbl: 'MSCU-5512088', docs: { ci: true, pl: true, bl: true, co: true, msds: true, sgs: true }, etaHistory: [], comments: []
+    },
+    {
+      id: 'SHP-2026-1033', po: 'PO-26042', buyer: 'UNIQLO', supplier: { name: 'ERDOS Group', country: 'China', city: 'Ordos' },
+      commodity: 'Fine Merino 80/2 · 18.5µ', qtyKg: 9900, valueUsd: 268000, incoterm: 'CIF', mode: 'Sea',
+      pol: 'CNTAO', pod: 'MGTMM', via: 'SGSIN', carrier: 'COSCO', vessel: 'COSCO PACIFIC V.096W', container: 'COSU 7719023 · 2×40HQ',
+      etd: d(-98), eta: d(-63), ata: d(-61), status: 'Received', delayed: true, delayReason: 'D05', delayNote: 'Dye-lot variance flagged at SGS pre-shipment — re-check cost 2 days.', progress: 100,
+      mbl: 'COSU-9011247', docs: { ci: true, pl: true, bl: true, co: true, msds: true, sgs: true }, etaHistory: [], comments: []
+    }
+  ];
+
+  const samples = [
+    { id: 'SMP-26-031', style: 'FK-2612', styleName: 'Cable crewneck 12GG', buyer: 'M&S', season: 'FW26', type: 'PP', qty: '3 pcs · S/M/L', requestedBy: 'u4', requestDate: d(-24), dueDate: d(6), status: 'Under Review', courier: 'FedEx', tracking: '7712 8834 5521', comments: [{ id: 'sc1', by: 'u1', text: 'PP shipped ' + d(-9) + ' via FedEx, POD scan at buyer DC.', at: ts(200) }] },
+    { id: 'SMP-26-030', style: 'FK-2608', styleName: 'Raglan cardigan 7GG', buyer: 'H&M', season: 'FW26', type: 'TOP', qty: '2 pcs · M/L', requestedBy: 'u4', requestDate: d(-26), dueDate: d(2), status: 'Courier Out', courier: 'DHL', tracking: 'JD0146 003 882 19', comments: [] },
+    { id: 'SMP-26-029', style: 'FK-2599', styleName: 'Turtleneck dress 5GG', buyer: 'ZARA', season: 'FW26', type: 'Fit', qty: '4 pcs · XS–L', requestedBy: 'u6', requestDate: d(-38), dueDate: d(-3), status: 'Under Review', courier: 'DHL', tracking: 'JD0146 002 114 76', comments: [{ id: 'sc2', by: 'u6', text: 'Fit changes on waist shaping — chasing Zara feedback before we cut the redo. Please hold.', at: ts(40) }] },
+    { id: 'SMP-26-028', style: 'FK-2614', styleName: 'Half-zip knit 14GG', buyer: 'UNIQLO', season: 'FW26', type: 'Size Set', qty: '6 pcs · XS–XXL', requestedBy: 'u6', requestDate: d(-15), dueDate: d(10), status: 'In Development', courier: null, tracking: null, comments: [] },
+    { id: 'SMP-26-027', style: 'FK-2601', styleName: 'Mohair crew · rose haze', buyer: 'Tommy Hilfiger', season: 'FW26', type: 'Proto', qty: '1 pc · M', requestedBy: 'u5', requestDate: d(0), dueDate: d(14), status: 'Requested', courier: null, tracking: null, comments: [] },
+    { id: 'SMP-26-026', style: 'FK-2587', styleName: 'Cable vest 10GG', buyer: 'GAP', season: 'FW26', type: 'PP', qty: '3 pcs · S/M/L', requestedBy: 'u5', requestDate: d(-40), dueDate: d(-9), status: 'Approved', courier: 'FedEx', tracking: '7712 0021 4409', comments: [] },
+    { id: 'SMP-26-025', style: 'FK-2604', styleName: 'Funnel neck 5GG fleece-blend', buyer: 'Decathlon', season: 'FW26', type: 'SMS', qty: '2 pcs · M/L', requestedBy: 'u5', requestDate: d(-12), dueDate: d(4), status: 'In Development', courier: null, tracking: null, comments: [] },
+    { id: 'SMP-26-024', style: 'FK-2591', styleName: 'Rib beanie & snood set', buyer: 'M&S', season: 'FW26', type: 'Proto', qty: '3 sets', requestedBy: 'u4', requestDate: d(-45), dueDate: d(-16), status: 'Redo', courier: 'DHL', tracking: 'JD0146 001 887 30', comments: [{ id: 'sc3', by: 'u5', text: 'Redo approved: gauge off by 0.5 ppp on 12GG. New needle plan shared with the knitting floor.', at: ts(300) }] },
+    { id: 'SMP-26-023', style: 'FK-2580', styleName: 'Cardigan w/ horn buttons', buyer: 'UNIQLO', season: 'FW26', type: 'TOP', qty: '2 pcs · M/L', requestedBy: 'u6', requestDate: d(-52), dueDate: d(-21), status: 'Approved', courier: 'DHL', tracking: 'JD0146 001 220 65', comments: [] },
+    { id: 'SMP-26-022', style: 'FK-2576', styleName: 'Dress 8GG · asymmetric', buyer: 'ZARA', season: 'SS27', type: 'PP', qty: '3 pcs · S/M/L', requestedBy: 'u6', requestDate: d(-61), dueDate: d(-30), status: 'Approved', courier: 'FedEx', tracking: '7712 0018 7742', comments: [] }
+  ];
+
+  const accessories = [
+    { id: 'ACC-26-117', item: 'Horn buttons 18L · 4-hole', spec: 'Natural horn, laser-engraved FK', supplier: 'Botany Trims', po: 'TR-88213', ordered: 48000, received: 0, unit: 'pcs', orderDate: d(-20), requiredDate: d(8), status: 'In Transit', shipmentId: 'SHP-2026-1049' },
+    { id: 'ACC-26-116', item: 'YKK zip 18cm · navy', spec: 'YKK® VISLON #5, auto-lock', supplier: 'YKK (Shanghai)', po: 'TR-88190', ordered: 12000, received: 0, unit: 'pcs', orderDate: d(-12), requiredDate: d(2), status: 'In Transit', shipmentId: 'SHP-2026-1045' },
+    { id: 'ACC-26-115', item: 'Woven main label · FK crest', spec: 'Damask, 30×50mm, fold-end', supplier: 'Label One', po: 'TR-88155', ordered: 60000, received: 60000, unit: 'pcs', orderDate: d(-35), requiredDate: d(-5), status: 'Received', shipmentId: null },
+    { id: 'ACC-26-114', item: 'Care label set FR/EN/MG', spec: 'Satin print, 25×35mm', supplier: 'Label One', po: 'TR-88156', ordered: 80000, received: 65000, unit: 'pcs', orderDate: d(-35), requiredDate: d(6), status: 'Shortage', shipmentId: null },
+    { id: 'ACC-26-113', item: 'Hangtag FW26 · recycled board', spec: '350gsm kraft, cotton cord', supplier: 'Papier Agencies', po: 'TR-88170', ordered: 25000, received: 0, unit: 'pcs', orderDate: d(-8), requiredDate: d(15), status: 'Ordered', shipmentId: null },
+    { id: 'ACC-26-112', item: 'Polybag 30×40 · recycled LDPE', spec: '30µ, self-seal, vent holes', supplier: 'MadaPack SARL', po: 'TR-88168', ordered: 40000, received: 0, unit: 'pcs', orderDate: d(-6), requiredDate: d(9), status: 'Ordered', shipmentId: null },
+    { id: 'ACC-26-111', item: 'Corozo buttons 20L · walnut', spec: 'Tagua nut, matte finish', supplier: 'Botany Trims', po: 'TR-88214', ordered: 24000, received: 0, unit: 'pcs', orderDate: d(-2), requiredDate: d(21), status: 'Planned', shipmentId: null },
+    { id: 'ACC-26-110', item: 'Neck tape 20mm · navy', spec: 'Herringbone twill, FK jacquard', supplier: 'Label One', po: 'TR-88142', ordered: 30000, received: 0, unit: 'm', orderDate: d(-28), requiredDate: d(1), status: 'In Transit', shipmentId: 'SHP-2026-1044' },
+    { id: 'ACC-26-109', item: 'Suede elbow patches', spec: 'Goat suede, ochre, 55×75mm', supplier: 'Botany Trims', po: 'TR-88101', ordered: 6000, received: 6000, unit: 'pcs', orderDate: d(-48), requiredDate: d(12), status: 'Received', shipmentId: null },
+    { id: 'ACC-26-108', item: 'Knit size tabs · XS–XXL', spec: 'Woven tab, colour-coded', supplier: 'MadaPack SARL', po: 'TR-88112', ordered: 12000, received: 4000, unit: 'pcs', orderDate: d(-50), requiredDate: d(-2), status: 'Shortage', shipmentId: null }
+  ];
+
+  const activity = [
+    { ts: ts(120), userId: 'u4', module: 'shipment', refId: 'SHP-2026-1042', action: 'Commented', detail: 'Asked for ETA confirmation — FW26 W39 knit slot depends on cashmere lot.' },
+    { ts: ts(96),  userId: 'u2', module: 'shipment', refId: 'SHP-2026-1042', action: 'ETA updated', detail: 'ETA ' + d(1) + ' → ' + d(5) + ' · +4d Colombo congestion' },
+    { ts: ts(72),  userId: 'u3', module: 'shipment', refId: 'SHP-2026-1044', action: 'Delay reported', detail: 'D03 · Customs inspection hold at Toamasina' },
+    { ts: ts(60),  userId: 'u6', module: 'shipment', refId: 'SHP-2026-1043', action: 'Commented', detail: 'Requested early SGS booking for the UNIQLO rib program.' },
+    { ts: ts(48),  userId: 'u4', module: 'shipment', refId: 'SHP-2026-1044', action: 'Commented', detail: 'Escalated Zara W38 loading plan dependency.' },
+    { ts: ts(40),  userId: 'u6', module: 'sample',   refId: 'SMP-26-029',    action: 'Commented', detail: 'Holding redo until Zara fit feedback.' },
+    { ts: ts(30),  userId: 'u5', module: 'shipment', refId: 'SHP-2026-1049', action: 'Commented', detail: 'Decathlon line loading vs button ETA check.' },
+    { ts: ts(24),  userId: 'u1', module: 'sample',   refId: 'SMP-26-031',    action: 'Status changed', detail: 'Courier Out → Under Review (FedEx 7712 8834 5521)' },
+    { ts: ts(20),  userId: 'u4', module: 'shipment', refId: 'SHP-2026-1048', action: 'Commented', detail: 'Set latest factory receipt deadline ' + d(40) + ' for M&S mid-Nov start.' },
+    { ts: ts(12),  userId: 'u2', module: 'accessory', refId: 'ACC-26-116',   action: 'Status changed', detail: 'Ordered → In Transit (linked SHP-2026-1045, air)' },
+    { ts: ts(6),   userId: 'u3', module: 'accessory', refId: 'ACC-26-114',   action: 'Shortage flagged', detail: 'Care labels 65k/80k received — balance on next Label One lot.' },
+    { ts: ts(2),   userId: 'u5', module: 'sample',   refId: 'SMP-26-027',    action: 'Sample requested', detail: 'Proto · Tommy Hilfiger · mohair crew, due ' + d(14) }
+  ].map((a, i) => Object.assign({ id: 'a' + i }, a));
+
+  return {
+    meta: {
+      company: 'FlexKnit Factories', app: 'FlexKnit Link', tagline: 'Logistics × Merchandising Control Tower',
+      site: 'Antananarivo · Madagascar', hub: 'Toamasina Port', seededAt: new Date().toISOString()
+    },
+    users, catalog, shipments, samples, accessories, activity
+  };
+}
+
+var FlexSeed = { build };
+
+</script>
+<script>
+/* ==================== VIEWS ==================== */
+'use strict';
+/* ============================================================
+   FlexKnit Link — views & modals
+   ============================================================ */
+
+/* ============================ LOGIN ============================ */
+function viewLogin() {
+  const groups = [
+    { key: 'logistics', label: 'Logistics & Import desk', color: '#0d9488' },
+    { key: 'merchandising', label: 'Merchandising', color: '#7c3aed' },
+    { key: 'admin', label: 'Management', color: '#475569' }
+  ];
+  return `
+  <div class="login">
+    <div class="login-brand">
+      <div class="login-logo">
+        <span class="logo-mark">${icon('knit', 24)}</span>
+        <div><div style="font-weight:800;font-size:16px;letter-spacing:.02em">FLEXKNIT <span style="color:#2dd4bf">LINK</span></div>
+        <div style="font-size:11px;color:#6d829c">Factories · Antananarivo</div></div>
+      </div>
+      <h1>One control tower for <em>logistics</em> &amp; <em>merchandising</em>.</h1>
+      <p class="sub">Share live data on yarn imports, samples, accessories and ETAs — with delay reasons every merchandiser can act on. Built the way the world's top knitwear mills run their supply chain: Consinee, ERDOS, Newtimes, Xinao, Crystal.</p>
+      <div class="login-feats">
+        <div class="login-feat"><span class="ic">${icon('ship', 16)}</span><span><b>Import tracking</b> — Ningbo / Shanghai / Qingdao → Toamasina, docs checklist, ETA change history.</span></div>
+        <div class="login-feat"><span class="ic">${icon('shirt', 16)}</span><span><b>Sample pipeline</b> — Proto, Fit, PP, TOP, size sets with courier tracking &amp; approvals.</span></div>
+        <div class="login-feat"><span class="ic">${icon('tag', 16)}</span><span><b>Trims coverage</b> — buttons, zips, labels and hangtags against the line-loading plan.</span></div>
+        <div class="login-feat"><span class="ic">${icon('bar', 16)}</span><span><b>Delay analytics</b> — coded reasons (customs holds, transshipment congestion, weather…) with on-time trends.</span></div>
+      </div>
+      <div class="login-foot">© ${new Date().getFullYear()} FlexKnit Factories SARL — internal ops platform · demo workspace</div>
+    </div>
+    <div class="login-panel"><div class="login-box">
+      <h2>Sign in to your workspace</h2>
+      <p class="hint">Demo mode — pick a user to explore the platform with their permissions.</p>
+      ${groups.map(g => `
+        <div class="team-head"><span class="dot" style="background:${g.color}"></span>${g.label}</div>
+        ${S.state.users.filter(u => u.role === g.key).map(u => `
+          <button class="user-pick" data-action="login" data-id="${u.id}">
+            ${avatar(u)}
+            <span><span class="up-name">${esc(u.name)}</span><br><span class="up-title">${esc(u.title)}</span></span>
+            <span class="up-go">${icon('arrow', 16)}</span>
+          </button>`).join('')}
+      `).join('')}
+      <div class="login-note"><b>Roles:</b> logistics can update ETAs, log delays, tick documents and book couriers. Merchandising comments, raises sample requests and tracks anything affecting the production plan.</div>
+    </div></div>
+  </div>`;
+}
+
+/* ============================ SHARED BITS ============================ */
+function routeViz(s) {
+  const modeIc = s.mode === 'Air' ? icon('plane', 15) : icon('anchor', 15);
+  return `<div class="routeviz">
+    <div class="rv-node"><div class="rv-code">${esc(s.pol)}</div><div class="rv-name">${esc(polName(s.pol))}</div></div>
+    <div class="rv-line">${modeIc}</div>
+    ${s.via ? `<span class="rv-via">via ${esc(s.via)} · ${esc(viaName(s.via))}</span><div class="rv-line"></div>` : ''}
+    <div class="rv-node"><div class="rv-code">${esc(s.pod)}</div><div class="rv-name">${esc(podName(s.pod))}</div></div>
+    <span class="rv-via" style="border-style:solid;background:var(--accent-soft);border-color:#bfe3df;color:var(--accent-ink)">${icon('truck', 12)}&nbsp; Factory · Antananarivo</span>
+  </div>`;
+}
+function shipmentFiltersHtml() {
+  const c = catalog(), f = S.f;
+  const opt = (v, l, sel) => `<option value="${esc(v)}"${sel ? ' selected' : ''}>${esc(l)}</option>`;
+  return `
+    <label class="tsearch">${icon('search', 14)}<input placeholder="Search shipment, PO, supplier…" value="${esc(S.q)}" data-input="gq"></label>
+    <select class="tsel" data-filter="shipStatus">${opt('All', 'All statuses', !f.shipStatus || f.shipStatus === 'All')}${c.shipmentStatuses.map(s => opt(s, s, f.shipStatus === s)).join('')}</select>
+    <select class="tsel" data-filter="buyer">${opt('All', 'All buyers', !f.buyer || f.buyer === 'All')}${c.buyers.map(b => opt(b, b, f.buyer === b)).join('')}</select>
+    <select class="tsel" data-filter="mode">${opt('All', 'Sea + Air', !f.mode || f.mode === 'All')}${opt('Sea', 'Sea', f.mode === 'Sea')}${opt('Air', 'Air', f.mode === 'Air')}</select>
+    <select class="tsel" data-filter="flag">${opt('all', 'All shipments', !f.flag || f.flag === 'all')}${opt('delayed', 'Delayed only', f.flag === 'delayed')}${opt('watch', 'ETA ≤ 7 days', f.flag === 'watch')}</select>`;
+}
+function filterShipments(list) {
+  const f = S.f, T = todayISO();
+  return list.filter(s =>
+    (!f.shipStatus || f.shipStatus === 'All' || s.status === f.shipStatus) &&
+    (!f.buyer || f.buyer === 'All' || s.buyer === f.buyer) &&
+    (!f.mode || f.mode === 'All' || s.mode === f.mode) &&
+    (!f.flag || f.flag === 'all' || (f.flag === 'delayed' ? s.delayed : (!s.delayed && s.status !== 'Received' && diffDays(s.eta, T) <= 7))) &&
+    (!S.q || [s.id, s.po, s.buyer, s.supplier.name, s.commodity, s.carrier, s.vessel, s.container, s.mbl].join(' ').toLowerCase().includes(S.q))
+  );
+}
+function shipmentRow(s) {
+  const dr = docsReady(s);
+  return `<tr class="click" data-action="open-ship" data-id="${s.id}">
+    <td><div class="td-main mono">${s.id}</div><div class="td-sub">${esc(s.po)} · ${esc(s.buyer)}</div></td>
+    <td><div class="td-main">${esc(s.supplier.name)}</div><div class="td-sub">${esc(s.commodity)}</div></td>
+    <td><span class="route">${esc(s.pol)} <span class="sep">${s.mode === 'Air' ? icon('plane', 12) : icon('anchor', 12)}›</span> ${esc(s.pod)}</span></td>
+    <td><div>${esc(s.carrier)}</div><div class="td-sub">${esc(s.vessel || '—')}</div></td>
+    <td class="mono">${fmtDate(s.etd)}</td>
+    <td><div class="mono" style="font-weight:700">${fmtDate(s.eta)}</div><div style="margin-top:3px">${etaChipHtml(s)}</div></td>
+    <td class="mono">${s.ata ? fmtDate(s.ata) : '—'}</td>
+    <td>${stChip(s)}</td>
+    <td>${s.delayed ? chip(delayLabel(s.delayReason).split(' · ')[1] || 'Delayed', 'red', ' chip-pulse') : '<span class="text-mut">—</span>'}</td>
+    <td><div class="prog ${s.delayed ? 'warn' : ''}"><i style="width:${s.progress}%"></i></div><div class="td-sub num" style="text-align:left">${s.progress}%</div></td>
+    <td>${donut(Math.round(dr / 6 * 100), dr === 6 ? '#16a34a' : dr >= 3 ? '#d97706' : '#dc2626', 34, 4.5)}<span>${dr}/6</span></td>
+  </tr>`;
+}
+
+/* ============================ DASHBOARD ============================ */
+function viewDashboard() {
+  const T = todayISO();
+  const sh = S.state.shipments, sp = S.state.samples, ac = S.state.accessories;
+  const active = sh.filter(s => s.status !== 'Received');
+  const delayed = active.filter(s => s.delayed);
+  const received = sh.filter(s => s.status === 'Received' && s.ata);
+  const onTimePct = received.length ? Math.round(received.filter(s => diffDays(s.ata, s.eta) <= 0).length / received.length * 100) : 100;
+  const inCbm = active.filter(s => s.mode === 'Sea').length;
+  const samplesOpen = sp.filter(s => !['Approved'].includes(s.status)).length;
+  const samplesOverdue = sp.filter(s => diffDays(s.dueDate, T) < 0 && s.status !== 'Approved').length;
+  const valueMoving = active.reduce((a, s) => a + s.valueUsd, 0);
+
+  // ETA groups
+  const upcoming = active.filter(s => diffDays(s.eta, T) >= -2).sort((a, b) => a.eta.localeCompare(b.eta));
+  const weeks = [
+    { label: 'This week', lo: -2, hi: 6 }, { label: 'Next week', lo: 7, hi: 13 }, { label: 'Week after', lo: 14, hi: 21 }, { label: 'Later', lo: 22, hi: 999 }
+  ].map(w => ({ ...w, items: upcoming.filter(s => { const dd = diffDays(s.eta, T); return dd >= w.lo && dd <= w.hi; }) })).filter(w => w.items.length);
+
+  // watchlist = nearest ETA
+  const watch = upcoming.slice(0, 6);
+
+  // needs action
+  const needs = [];
+  delayed.forEach(s => needs.push({ tone: 'red', ic: 'alert', t: `${s.id} — ${delayLabel(s.delayReason)}`, s: `${s.supplier.name} → ${podName(s.pod)} · ETA ${fmtDate(s.eta)}`, btn: 'Open', act: 'open-ship', id: s.id }));
+  sp.filter(s => diffDays(s.dueDate, T) < 0 && s.status !== 'Approved').forEach(s => needs.push({ tone: 'red', ic: 'shirt', t: `${s.id} sample overdue (${s.style} ${s.styleName})`, s: `${s.buyer} · ${s.type} · due ${fmtDate(s.dueDate)}`, btn: 'Open', act: 'open-sample', id: s.id }));
+  ac.filter(a => a.status === 'Shortage').forEach(a => needs.push({ tone: 'red', ic: 'tag', t: `${a.id} shortage — ${num(a.ordered - a.received)} ${a.unit} missing`, s: `${a.item} · required ${fmtDate(a.requiredDate)}`, btn: 'Open', act: 'open-acc', id: a.id }));
+  active.filter(s => diffDays(s.eta, T) <= 7 && docsReady(s) < 6).forEach(s => needs.push({ tone: 'amber', ic: 'doc', t: `${s.id} — docs ${docsReady(s)}/6 before arrival`, s: `${s.buyer} · ETA ${fmtDate(s.eta)}`, btn: 'Docs', act: 'open-ship', id: s.id }));
+  ac.filter(a => a.received < a.ordered && a.status !== 'Shortage' && diffDays(a.requiredDate, T) <= 7 && diffDays(a.requiredDate, T) >= 0).forEach(a => needs.push({ tone: 'amber', ic: 'tag', t: `${a.id} needed in ${diffDays(a.requiredDate, T)}d — ${a.status}`, s: `${a.item} · ${num(a.ordered - a.received)} ${a.unit} outstanding`, btn: 'Open', act: 'open-acc', id: a.id }));
+
+  // delay pareto mini
+  const rc = {};
+  sh.filter(s => s.delayReason).forEach(s => { rc[s.delayReason] = (rc[s.delayReason] || 0) + 1; });
+  const pareto = Object.entries(rc).map(([code, n]) => ({ label: delayLabel(code), value: n })).sort((a, b) => b.value - a.value).slice(0, 5);
+
+  const feed = S.state.activity.slice(0, 8);
+
+  return `
+  <div class="kpis">
+    <div class="kpi" style="--kc:#0d9488"><span class="k-label">Shipments in motion</span>
+      <div class="k-row"><span class="k-num">${active.length}</span>${chip(`${inCbm} sea · ${active.length - inCbm} air`, 'teal')}</div>
+      <span class="k-sub">${money(valueMoving)} of yarn &amp; trims inbound</span>
+      <span class="k-spark">${spark([4, 6, 5, 8, 7, 9, active.length])}</span></div>
+    <div class="kpi" style="--kc:#15803d"><span class="k-label">On-time arrival</span>
+      <div class="k-row"><span class="k-num">${onTimePct}%</span>${chip(`${received.length} deliveries YTD`, 'green')}</div>
+      <span class="k-sub">ATA vs promised ETA, last 6 months</span>
+      <span class="k-spark">${spark([62, 70, 66, 78, 74, onTimePct], 92, 34, '#16a34a')}</span></div>
+    <div class="kpi" style="--kc:#dc2626"><span class="k-label">Delayed now</span>
+      <div class="k-row"><span class="k-num">${delayed.length}</span>${delayed.length ? chip(`avg ${Math.max(...delayed.map(delayDays))}d slip`, 'red', ' chip-pulse') : chip('none', 'green')}</div>
+      <span class="k-sub">Top cause: ${pareto[0] ? esc(pareto[0].label) : '—'}</span>
+      <span class="k-spark">${spark([1, 3, 2, 4, 3, delayed.length], 92, 34, '#dc2626')}</span></div>
+    <div class="kpi" style="--kc:#7c3aed"><span class="k-label">Samples in play</span>
+      <div class="k-row"><span class="k-num">${samplesOpen}</span>${samplesOverdue ? chip(`${samplesOverdue} overdue`, 'red') : chip('all on time', 'green')}</div>
+      <span class="k-sub">${ac.filter(a => a.status === 'Shortage').length} trims shortage${ac.filter(a => a.status === 'Shortage').length === 1 ? '' : 's'} flagged</span>
+      <span class="k-spark">${spark([8, 6, 9, 7, 8, samplesOpen], 92, 34, '#7c3aed')}</span></div>
+  </div>
+
+  <div class="card" style="margin-bottom:16px">
+    <div class="card-h"><h3>ETA timeline</h3><span class="sub">next arrivals at Toamasina &amp; Ivato — click a card for detail</span>
+      <div class="right"><button class="btn btn-ghost btn-sm" data-action="nav" data-nav="shipments">All shipments ${icon('arrow', 13)}</button></div></div>
+    <div class="card-b">
+      ${weeks.length ? `<div class="eta-strip">${weeks.map(w => `
+        <div class="eta-week"><h4><span class="wnum">${w.items.length}</span>${w.label}</h4>
+          <div class="eta-chips">${w.items.slice(0, 5).map(s => `
+            <button class="eta-chip" data-action="open-ship" data-id="${s.id}">
+              <div><div class="ec-id">${s.id}</div><div class="ec-sub">${esc(s.supplier.name)} · ${esc(s.buyer)}</div></div>
+              <div class="ec-right">${s.mode === 'Air' ? icon('plane', 14) : icon('anchor', 14)}<div class="days-chip" style="color:${s.delayed ? 'var(--red)' : 'var(--accent-ink)'}">${fmtDate(s.eta)}</div></div>
+            </button>`).join('')}
+            ${w.items.length > 5 ? `<div class="td-sub" style="padding:2px 4px">+${w.items.length - 5} more…</div>` : ''}
+          </div></div>`).join('')}</div>`
+      : '<div class="empty">No upcoming ETAs in the window.</div>'}
+    </div>
+  </div>
+
+  <div class="grid-2">
+    <div class="card">
+      <div class="card-h"><h3>Arrival watchlist</h3><span class="sub">nearest ETAs · docs readiness</span></div>
+      <div class="tablewrap"><table>
+        <thead><tr><th>Shipment</th><th>Route</th><th>ETA</th><th>Status</th><th>Docs</th><th>Progress</th></tr></thead>
+        <tbody>${watch.map(s => `<tr class="click" data-action="open-ship" data-id="${s.id}">
+          <td><div class="td-main mono">${s.id}</div><div class="td-sub">${esc(s.buyer)} · ${esc(s.carrier)}</div></td>
+          <td><span class="route">${esc(s.pol)} › ${esc(s.pod)}</span></td>
+          <td><div class="mono" style="font-weight:700">${fmtDate(s.eta)}</div><div style="margin-top:3px">${etaChipHtml(s)}</div></td>
+          <td>${stChip(s)}</td>
+          <td style="min-width:52px"><span style="position:relative">${donut(Math.round(docsReady(s) / 6 * 100), docsReady(s) === 6 ? '#16a34a' : '#d97706', 34, 4.5)}<span>${docsReady(s)}/6</span></span></td>
+          <td><div class="prog ${s.delayed ? 'warn' : ''}"><i style="width:${s.progress}%"></i></div></td>
+        </tr>`).join('')}</tbody>
+      </table></div>
+    </div>
+    <div class="card">
+      <div class="card-h"><h3>Needs action</h3><span class="sub">${needs.length} open item${needs.length === 1 ? '' : 's'}</span></div>
+      <div class="act-list">
+        ${needs.length ? needs.slice(0, 7).map(n => `
+          <div class="act-it">
+            <span class="ai-ic ai-${n.tone}">${icon(n.ic, 15)}</span>
+            <span style="min-width:0"><span class="ai-t">${esc(n.t)}</span><br><span class="ai-s">${esc(n.s)}</span></span>
+            <button class="btn btn-ghost btn-sm ai-btn" data-action="${n.act}" data-id="${n.id}">${n.btn}</button>
+          </div>`).join('') : '<div class="empty">All clear — nothing needs action today. 🎉</div>'}
+      </div>
+    </div>
+  </div>
+
+  <div class="card" style="margin-bottom:16px">
+    <div class="card-h"><h3>Imports by buyer</h3><span class="sub">what's inbound for each account — yarn + trims, next arrival first</span>
+      <div class="right"><button class="btn btn-ghost btn-sm" data-action="nav" data-nav="imports">Full import timeline ${icon('arrow', 13)}</button></div></div>
+    <div class="card-b" style="display:flex;flex-wrap:wrap;gap:10px">
+      ${(() => {
+        const buyers = {};
+        active.forEach(s => {
+          const b = buyers[s.buyer] = buyers[s.buyer] || { yarn: 0, trims: 0, next: null, issues: 0 };
+          b.yarn++; if (s.delayed) b.issues++;
+          if (!b.next || s.eta < b.next) b.next = s.eta;
+        });
+        S.state.accessories.forEach(a => {
+          if (a.received >= a.ordered) return;
+          const link = a.shipmentId ? S.state.shipments.find(x => x.id === a.shipmentId) : null;
+          if (!link) return;
+          const b = buyers[link.buyer] = buyers[link.buyer] || { yarn: 0, trims: 0, next: null, issues: 0 };
+          b.trims++; if (a.status === 'Shortage' || diffDays(a.requiredDate, T) < 0) b.issues++;
+          if (!b.next || a.requiredDate < b.next) b.next = a.requiredDate;
+        });
+        const entries = Object.entries(buyers).sort((x, y) => (x[1].next || '').localeCompare(y[1].next || ''));
+        return entries.length ? entries.map(([name, b]) => `
+          <button class="eta-chip" style="min-width:215px" data-action="buyer-filter" data-buyer="${esc(name)}" title="Show import timeline for ${esc(name)}">
+            <div><div class="ec-id" style="font-family:inherit;font-size:13.5px">${esc(name)}</div>
+            <div class="ec-sub">${b.yarn} yarn · ${b.trims} trims inbound</div></div>
+            <div class="ec-right">
+              ${b.issues ? chip(b.issues + ' issue' + (b.issues > 1 ? 's' : ''), 'red') : chip('clear', 'green')}
+              <div class="td-sub" style="margin-top:3px">next ${fmtDate(b.next)}</div>
+            </div>
+          </button>`).join('') : '<div class="empty">No inbound imports.</div>';
+      })()}
+    </div>
+  </div>
+
+  <div class="grid-2e">
+    <div class="card">
+      <div class="card-h"><h3>Top delay reasons</h3><span class="sub">all shipments, coded</span>
+        <div class="right"><button class="btn btn-ghost btn-sm" data-action="nav" data-nav="analytics">Analytics ${icon('arrow', 13)}</button></div></div>
+      <div class="card-b">
+        ${pareto.length ? hbars(pareto.map(p => ({ ...p, suffix: p.value + '×' })), () => 'linear-gradient(90deg,#f59e0b,#dc2626)') : '<div class="empty">No delays recorded.</div>'}
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-h"><h3>Latest activity</h3><span class="sub">logistics × merchandising</span>
+        <div class="right"><button class="btn btn-ghost btn-sm" data-action="nav" data-nav="activity">Full feed ${icon('arrow', 13)}</button></div></div>
+      <div class="act-list">${feedHtml(feed, true)}</div>
+    </div>
+  </div>`;
+}
+
+/* ============================ SHIPMENTS ============================ */
+function viewShipments() {
+  let list = filterShipments(S.state.shipments);
+  const sortKey = S.f.sort || 'eta';
+  list = [...list].sort((a, b) => sortKey === 'eta' ? a.eta.localeCompare(b.eta) : sortKey === 'value' ? b.valueUsd - a.valueUsd : a.id.localeCompare(b.id));
+  const totalVal = list.reduce((a, s) => a + s.valueUsd, 0);
+  return `
+  <div class="toolbar">
+    ${shipmentFiltersHtml()}
+    <select class="tsel" data-filter="sort">
+      <option value="eta"${sortKey === 'eta' ? ' selected' : ''}>Sort: ETA</option>
+      <option value="id"${sortKey === 'id' ? ' selected' : ''}>Sort: Newest</option>
+      <option value="value"${sortKey === 'value' ? ' selected' : ''}>Sort: Value</option>
+    </select>
+    ${can() ? `<button class="btn btn-primary" data-action="new-shipment">${icon('plus', 15)} New shipment</button>` : ''}
+    <button class="btn btn-ghost" data-action="export" data-module="shipments">${icon('download', 15)} CSV</button>
+    <span class="count">${list.length} shipment${list.length === 1 ? '' : 's'} · ${money(totalVal)} · <span class="link" data-action="reset-demo">reset demo data</span></span>
+  </div>
+  <div class="card tablewrap"><table>
+    <thead><tr><th>Shipment</th><th>Supplier / commodity</th><th>Route</th><th>Carrier / vessel</th><th>ETD</th><th>ETA</th><th>ATA</th><th>Status</th><th>Delay reason</th><th>Progress</th><th>Docs</th></tr></thead>
+    <tbody>${list.length ? list.map(shipmentRow).join('') : `<tr><td colspan="11"><div class="empty">No shipments match your filters.</div></td></tr>`}</tbody>
+  </table></div>`;
+}
+
+/* ---- shipment detail modal ---- */
+function openShipModal(id) {
+  const s = S.state.shipments.find(x => x.id === id);
+  if (!s) return;
+  if (!(S.modal && S.modal.type === 'ship' && S.modal.id === id)) S.shipTab = 'overview';
+  S.modal = { type: 'ship', id };
+  const dr = docsReady(s), u = user;
+  const tab = S.shipTab || 'overview';
+  const bodyHtml = tab === 'overview' ? shipOverview(s) : tab === 'docs' ? shipDocs(s) : shipComments(s);
+  openModal(`
+    <div class="m-h" id="ship-modal" data-id="${s.id}">
+      <div style="min-width:0">
+        <h2><span class="mono">${s.id}</span> ${stChip(s)} ${s.delayed ? chip(delayLabel(s.delayReason), 'red', ' chip-pulse') : ''}</h2>
+        <div class="m-sub">${esc(s.po)} · ${esc(s.buyer)} · ${esc(s.supplier.name)} (${esc(s.supplier.city || '')}) · ${esc(s.commodity)}</div>
+      </div>
+      <button class="icon-btn m-x" data-action="close">${icon('x', 16)}</button>
+    </div>
+    <div class="tabs">
+      ${[['overview', 'Overview', ''], ['docs', 'Documents', `${dr}/6`], ['comments', 'Discussion', s.comments.length || '']].map(([k, l, n]) =>
+        `<button class="tab ${tab === k ? 'on' : ''}" data-action="ship-tab" data-tab="${k}">${l}${n ? `<span class="tn">${n}</span>` : ''}</button>`).join('')}
+      <div style="margin-left:auto;display:flex;gap:8px;padding:8px 0">
+        ${can() ? `
+          <button class="btn btn-soft btn-sm" data-action="eta-form" data-id="${s.id}">${icon('clock', 14)} Update ETA</button>
+          <button class="btn ${s.delayed ? 'btn-ghost' : 'btn-danger'} btn-sm" data-action="delay-form" data-id="${s.id}">${icon('alert', 14)} ${s.delayed ? 'Edit delay' : 'Report delay'}</button>
+          ${s.status !== 'Received' ? `<button class="btn btn-ghost btn-sm" data-action="receive" data-id="${s.id}">${icon('check', 14)} Receive</button>` : ''}`
+        : `<span class="lock-tip" style="padding:8px 4px">${icon('lock', 13)} read-only — logistics updates ETAs &amp; delays</span>`}
+      </div>
+    </div>
+    <div class="m-b">${bodyHtml}</div>`);
+}
+function shipOverview(s) {
+  const lastEta = (s.etaHistory || []).slice(-1)[0];
+  return `
+    <div class="facts">
+      <div class="fact"><div class="f-k">Supplier</div><div class="f-v">${esc(s.supplier.name)}</div></div>
+      <div class="fact"><div class="f-k">Buyer / PO</div><div class="f-v">${esc(s.buyer)} · <span class="mono">${esc(s.po)}</span></div></div>
+      <div class="fact"><div class="f-k">Commodity</div><div class="f-v">${esc(s.commodity)}</div></div>
+      <div class="fact"><div class="f-k">Quantity</div><div class="f-v">${num(s.qtyKg)} kg</div></div>
+      <div class="fact"><div class="f-k">Value · Incoterm</div><div class="f-v">${money(s.valueUsd)} · ${esc(s.incoterm)}</div></div>
+      <div class="fact"><div class="f-k">Mode</div><div class="f-v">${s.mode === 'Air' ? icon('plane', 14) + ' Air freight' : icon('anchor', 14) + ' Sea freight'}</div></div>
+      <div class="fact"><div class="f-k">Carrier / vessel</div><div class="f-v">${esc(s.carrier)}<br><span class="td-sub">${esc(s.vessel || '—')}</span></div></div>
+      <div class="fact"><div class="f-k">Container / AWB</div><div class="f-v mono" style="font-size:12.5px">${esc(s.container)}</div></div>
+      <div class="fact"><div class="f-k">MBL / HAWB</div><div class="f-v mono" style="font-size:12.5px">${esc(s.mbl || '—')}</div></div>
+      <div class="fact"><div class="f-k">ETD</div><div class="f-v mono">${fmtDateY(s.etd)}</div></div>
+      <div class="fact"><div class="f-k">ETA ${lastEta && lastEta.on !== s.etaHistory[0]?.on ? '· changed' : ''}</div><div class="f-v mono">${fmtDateY(s.eta)} ${etaChipHtml(s)}</div></div>
+      <div class="fact"><div class="f-k">ATA</div><div class="f-v mono">${s.ata ? fmtDateY(s.ata) : '—'}</div></div>
+    </div>
+    ${routeViz(s)}
+    ${s.delayed ? `<div style="margin-top:14px;background:var(--red-bg);border:1px solid #f5caca;border-radius:12px;padding:13px 16px;display:flex;gap:11px;align-items:flex-start">
+      <span style="color:var(--red);padding-top:1px">${icon('alert', 16)}</span>
+      <div><b style="color:var(--red-ink)">Delay — ${delayLabel(s.delayReason)}</b><div style="font-size:12.5px;color:var(--red-ink);margin-top:2px">${esc(s.delayNote || 'No note added.')}</div></div>
+    </div>` : ''}
+    ${(s.etaHistory || []).length ? `
+      <h4 style="margin:20px 0 4px;font-size:13px;font-weight:800">ETA history</h4>
+      <div class="tl">${[...s.etaHistory].reverse().map((h, i) => `
+        <div class="tl-it"><span class="tl-dot ${i === 0 ? '' : 'old'}"></span>
+          <div><div class="tl-t">ETA <b>${fmtDateY(h.eta)}</b> — set ${fmtDate(h.on)} by ${esc(user(h.by)?.name || 'System')}</div>
+          ${h.note ? `<div class="tl-s">${esc(h.note)}</div>` : ''}</div></div>`).join('')}</div>` : ''}`;
+}
+function shipDocs(s) {
+  return `
+  <div style="display:flex;gap:22px;align-items:center;margin-bottom:16px;flex-wrap:wrap">
+    <div style="position:relative">${donut(Math.round(docsReady(s) / 6 * 100), docsReady(s) === 6 ? '#16a34a' : '#d97706', 74, 8)}<span style="position:absolute;inset:0;display:grid;place-items:center;font-weight:800;font-size:16px">${docsReady(s)}/6</span></div>
+    <div style="font-size:13px;color:var(--mut);max-width:430px">Customs pre-alert at <b>Toamasina</b> requires the full set before arrival. ${can() ? 'Tick documents as the carrier or supplier releases them.' : 'Logistics ticks documents as they are released.'}</div>
+  </div>
+  ${catalog().docs.map(ddoc => {
+    const on = !!s.docs[ddoc.key];
+    return `<label class="doc-row ${on ? 'done' : ''}" style="cursor:${can() ? 'pointer' : 'default'}">
+      <span class="doc-check">${on ? icon('check', 13) : ''}<input type="checkbox" ${on ? 'checked' : ''} ${can() ? `data-action="toggle-doc" data-doc="${ddoc.key}" data-on="${on ? 1 : 0}" data-ship="${s.id}"` : 'disabled'}></span>
+      <span class="doc-name">${esc(ddoc.label)}</span>
+      <span style="margin-left:auto">${on ? chip('received', 'green') : chip('pending', 'slate')}</span>
+    </label>`;
+  }).join('')}`;
+}
+function shipComments(s) {
+  return `<div>${s.comments.length ? s.comments.map(cm).join('') : '<div class="empty">No discussion yet — ask logistics a question here.</div>'}</div>
+  <form class="cm-input" data-form="comment-ship">
+    ${avatar(S.user)}
+    <textarea name="text" placeholder="${S.user.role === 'merchandising' ? 'Ask logistics about this shipment…' : 'Reply to merchandising…'}" required></textarea>
+    <input type="hidden" name="id" value="${s.id}">
+    <button class="btn btn-primary btn-sm" style="align-self:flex-end">Send</button>
+  </form>`;
+}
+function cm(c) {
+  const u = user(c.by) || { name: 'System', color: '#94a3b8', role: 'system' };
+  return `<div class="cm">${avatar(u)}
+    <div class="cm-bubble"><div class="cm-h"><b>${esc(u.name)}</b><span class="role-badge role-${u.role}">${u.role}</span><time>${ago(c.at)}</time></div>${esc(c.text)}</div>
+  </div>`;
+}
+
+/* ---- forms ---- */
+function openEtaForm(id) {
+  const s = S.state.shipments.find(x => x.id === id);
+  openModal(`
+    <div class="m-h"><h2>${icon('clock', 18)} Update ETA — <span class="mono">${s.id}</span></h2><button class="icon-btn m-x" data-action="close">${icon('x', 16)}</button></div>
+    <form data-form="eta" class="m-b frm">
+      <input type="hidden" name="id" value="${s.id}">
+      <div class="frow">
+        <div class="fld"><label>Current ETA</label><input value="${fmtDateY(s.eta)}" disabled></div>
+        <div class="fld"><label>New ETA <span class="req">*</span></label><input type="date" name="eta" required value="${s.eta}"><div class="fhelp">Merchandising sees this instantly + gets a notification.</div></div>
+      </div>
+      <div class="fld"><label>Reason for change</label><input name="note" placeholder="e.g. +3d — Colombo feeder rollover" value="${s.delayed ? esc(s.delayNote) : ''}"></div>
+      <div class="m-f"><button type="button" class="btn btn-ghost" data-action="close">Cancel</button><button class="btn btn-primary">Save new ETA</button></div>
+    </form>`, 'narrow');
+}
+function openDelayForm(id) {
+  const s = S.state.shipments.find(x => x.id === id);
+  const c = catalog();
+  openModal(`
+    <div class="m-h"><h2>${icon('alert', 18)} ${s.delayed ? 'Edit delay' : 'Report delay'} — <span class="mono">${s.id}</span></h2><button class="icon-btn m-x" data-action="close">${icon('x', 16)}</button></div>
+    <form data-form="delay" class="m-b frm">
+      <input type="hidden" name="id" value="${s.id}">
+      <div class="fld"><label>Delay status</label>
+        <select name="delayed">
+          <option value="1"${s.delayed ? ' selected' : ''}>Delayed — notify merchandising</option>
+          <option value="0"${!s.delayed ? ' selected' : ''}>Resolved — clear delay flag</option>
+        </select></div>
+      <div class="fld"><label>Delay reason code <span class="req">*</span></label>
+        <select name="reason" required>
+          <option value="">Select a reason…</option>
+          ${c.delayReasons.map(r => `<option value="${r.code}"${s.delayReason === r.code ? ' selected' : ''}>${r.code} · ${r.label} (${r.cat})</option>`).join('')}
+        </select></div>
+      <div class="fld"><label>Detail for merchandising</label><textarea name="note" rows="3" placeholder="What happened, impact on plan, next checkpoint…">${esc(s.delayNote)}</textarea></div>
+      <div class="fld"><label>Revised ETA (optional)</label><input type="date" name="revisedEta" value="${s.eta}"></div>
+      <div class="m-f"><button type="button" class="btn btn-ghost" data-action="close">Cancel</button><button class="btn btn-primary">Log update</button></div>
+    </form>`, 'narrow');
+}
+function openShipmentForm() {
+  const c = catalog();
+  openModal(`
+    <div class="m-h"><h2>${icon('plus', 18)} New import shipment</h2><button class="icon-btn m-x" data-action="close">${icon('x', 16)}</button></div>
+    <form data-form="new-shipment" class="m-b frm">
+      <div class="frow">
+        <div class="fld"><label>PO number <span class="req">*</span></label><input name="po" required placeholder="PO-26xxx"></div>
+        <div class="fld"><label>Buyer <span class="req">*</span></label><select name="buyer" required>${c.buyers.map(b => `<option>${b}</option>`).join('')}</select></div>
+      </div>
+      <div class="frow">
+        <div class="fld"><label>Supplier <span class="req">*</span></label><select name="supplier" required>${c.suppliers.map(s => `<option>${esc(s.name)} — ${esc(s.city)}</option>`).join('')}</select></div>
+        <div class="fld"><label>Commodity <span class="req">*</span></label><input name="commodity" required placeholder="e.g. Cashmere 2/26 · camel"></div>
+      </div>
+      <div class="frow frow">
+        <div class="fld"><label>Quantity (kg)</label><input name="qtyKg" type="number" min="0" placeholder="6000"></div>
+        <div class="fld"><label>Value (USD)</label><input name="valueUsd" type="number" min="0" placeholder="250000"></div>
+      </div>
+      <div class="frow">
+        <div class="fld"><label>Port of loading</label><select name="pol">${c.pols.map(p => `<option value="${p.code}">${p.code} · ${p.name}</option>`).join('')}</select></div>
+        <div class="fld"><label>Port of discharge</label><select name="pod">${c.pods.map(p => `<option value="${p.code}">${p.code} · ${p.name}</option>`).join('')}</select></div>
+      </div>
+      <div class="frow">
+        <div class="fld"><label>Transshipment via</label><select name="via"><option value="">Direct</option>${c.vias.map(v => `<option value="${v.code}">${v.code} · ${v.name}</option>`).join('')}</select></div>
+        <div class="fld"><label>Mode</label><select name="mode"><option>Sea</option><option>Air</option></select></div>
+      </div>
+      <div class="frow">
+        <div class="fld"><label>ETD <span class="req">*</span></label><input type="date" name="etd" required></div>
+        <div class="fld"><label>ETA <span class="req">*</span></label><input type="date" name="eta" required></div>
+      </div>
+      <div class="frow">
+        <div class="fld"><label>Carrier</label><input name="carrier" placeholder="Maersk / MSC / Ethiopian Cargo"></div>
+        <div class="fld"><label>Incoterm</label><select name="incoterm"><option>FOB</option><option>CIF</option><option>EXW</option><option>DAP</option></select></div>
+      </div>
+      <div class="m-f"><button type="button" class="btn btn-ghost" data-action="close">Cancel</button><button class="btn btn-primary">Create shipment</button></div>
+    </form>`, 'mid');
+}
+
+/* ============================ SAMPLES ============================ */
+const SAMPLE_COLS = ['Requested', 'In Development', 'Courier Out', 'Under Review', 'Approved', 'Redo'];
+function viewSamples() {
+  let list = S.state.samples;
+  if (S.f.buyer && S.f.buyer !== 'All') list = list.filter(s => s.buyer === S.f.buyer);
+  if (S.f.sampleStatus && S.f.sampleStatus !== 'All') list = list.filter(s => s.status === S.f.sampleStatus);
+  if (S.q) list = list.filter(s => [s.id, s.style, s.styleName, s.buyer, s.type, s.courier, s.tracking].join(' ').toLowerCase().includes(S.q));
+  const T = todayISO();
+  return `
+  <div class="toolbar">
+    <label class="tsearch">${icon('search', 14)}<input placeholder="Search style, buyer, tracking…" value="${esc(S.q)}" data-input="gq"></label>
+    <select class="tsel" data-filter="buyer"><option value="All">All buyers</option>${catalog().buyers.map(b => `<option${S.f.buyer === b ? ' selected' : ''}>${b}</option>`).join('')}</select>
+    <button class="btn btn-primary" data-action="new-sample">${icon('plus', 15)} Request sample</button>
+    <button class="btn btn-ghost" data-action="export" data-module="samples">${icon('download', 15)} CSV</button>
+    <span class="count">${list.length} sample${list.length === 1 ? '' : 's'} in pipeline</span>
+  </div>
+  <div class="board">
+    ${SAMPLE_COLS.map(col => {
+      const items = list.filter(s => s.status === col);
+      const tone = { Requested: '#64748b', 'In Development': '#4f46e5', 'Courier Out': '#0369a1', 'Under Review': '#d97706', Approved: '#15803d', Redo: '#dc2626' }[col];
+      return `<div class="bcol">
+        <div class="bcol-h"><span class="bdot" style="background:${tone}"></span>${col}<span class="cnt">${items.length}</span></div>
+        ${items.map(s => {
+          const dd = diffDays(s.dueDate, T);
+          const cls = s.status === 'Approved' ? 'ok' : dd < 0 ? 'overdue' : dd <= 3 ? 'due-soon' : 'ok';
+          return `<div class="scard ${cls}" data-action="open-sample" data-id="${s.id}">
+            <div class="sc-top"><span class="sc-id">${s.id}</span>${chip(s.type, 'violet')}</div>
+            <div class="sc-name">${esc(s.styleName)}</div>
+            <div class="sc-style">${esc(s.style)} · ${esc(s.season)} · ${esc(s.qty)}</div>
+            <div class="sc-meta">${chip(esc(s.buyer), 'outline')}${dd < 0 && s.status !== 'Approved' ? chip(`${-dd}d overdue`, 'red') : chip(`due ${fmtDate(s.dueDate)}`, dd <= 3 && s.status !== 'Approved' ? 'amber' : 'slate')}</div>
+            ${s.courier ? `<div class="sc-foot">${icon('truck', 13)} ${esc(s.courier)} <span class="mono" style="margin-left:auto">${esc(s.tracking || '')}</span></div>` : `<div class="sc-foot">${avatar(user(s.requestedBy) || { name: '?', color: '#94a3b8' }, 'sm')} requested ${fmtDate(s.requestDate)}</div>`}
+          </div>`;
+        }).join('') || '<div style="text-align:center;color:var(--faint);font-size:12px;padding:14px 0">—</div>'}
+      </div>`;
+    }).join('')}
+  </div>`;
+}
+function openSampleModal(id) {
+  const s = S.state.samples.find(x => x.id === id);
+  if (!s) return;
+  const nextCols = SAMPLE_COLS.filter(c => c !== s.status);
+  openModal(`
+    <div class="m-h">
+      <div style="min-width:0">
+        <h2><span class="mono">${s.id}</span> ${smChip(s.status)} ${chip(s.type, 'violet')}</h2>
+        <div class="m-sub">${esc(s.style)} — ${esc(s.styleName)} · ${esc(s.buyer)} · ${esc(s.season)} · ${esc(s.qty)}</div>
+      </div>
+      <button class="icon-btn m-x" data-action="close">${icon('x', 16)}</button>
+    </div>
+    <div class="m-b">
+      <div class="facts" style="grid-template-columns:repeat(4,1fr)">
+        <div class="fact"><div class="f-k">Requested</div><div class="f-v mono">${fmtDate(s.requestDate)}</div></div>
+        <div class="fact"><div class="f-k">Due to buyer</div><div class="f-v mono">${fmtDate(s.dueDate)}</div></div>
+        <div class="fact"><div class="f-k">Requested by</div><div class="f-v">${esc(user(s.requestedBy)?.name || '—')}</div></div>
+        <div class="fact"><div class="f-k">Courier</div><div class="f-v">${s.courier ? `${esc(s.courier)}<br><span class="td-sub mono">${esc(s.tracking || '')}</span>` : '—'}</div></div>
+      </div>
+      <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:16px">
+        ${nextCols.map(c => `<button class="btn btn-ghost btn-sm" data-action="move-sample" data-id="${s.id}" data-to="${c}">${icon('arrow', 13)} Move to ${c}</button>`).join('')}
+      </div>
+      <hr class="mut-line">
+      ${s.comments.length ? s.comments.map(cm).join('') : '<div class="empty" style="padding:16px">No notes yet.</div>'}
+      <form class="cm-input" data-form="comment-sample">
+        ${avatar(S.user)}
+        <textarea name="text" placeholder="Add a note for the team (fit changes, buyer feedback, chase-ups)…" required></textarea>
+        <input type="hidden" name="id" value="${s.id}">
+        <button class="btn btn-primary btn-sm" style="align-self:flex-end">Send</button>
+      </form>
+    </div>`, 'mid');
+}
+function openSampleForm() {
+  const c = catalog();
+  openModal(`
+    <div class="m-h"><h2>${icon('shirt', 18)} New sample request</h2><button class="icon-btn m-x" data-action="close">${icon('x', 16)}</button></div>
+    <form data-form="new-sample" class="m-b frm">
+      <div class="frow">
+        <div class="fld"><label>Style code <span class="req">*</span></label><input name="style" required placeholder="FK-26xx"></div>
+        <div class="fld"><label>Style name</label><input name="styleName" placeholder="Cable crewneck 12GG"></div>
+      </div>
+      <div class="frow">
+        <div class="fld"><label>Buyer <span class="req">*</span></label><select name="buyer" required>${c.buyers.map(b => `<option>${b}</option>`).join('')}</select></div>
+        <div class="fld"><label>Season</label><select name="season"><option>FW26</option><option>SS27</option><option>FW27</option></select></div>
+      </div>
+      <div class="frow">
+        <div class="fld"><label>Sample type <span class="req">*</span></label><select name="type" required>${c.sampleTypes.map(t => `<option>${t}</option>`).join('')}</select></div>
+        <div class="fld"><label>Quantity</label><input name="qty" placeholder="3 pcs · S/M/L" value="1 pc"></div>
+      </div>
+      <div class="fld"><label>Due to buyer <span class="req">*</span></label><input type="date" name="dueDate" required><div class="fhelp">Logistics books the courier and updates tracking against this date.</div></div>
+      <div class="m-f"><button type="button" class="btn btn-ghost" data-action="close">Cancel</button><button class="btn btn-primary">Raise request</button></div>
+    </form>`, 'narrow');
+}
+function openCourierForm(id) {
+  const s = S.state.samples.find(x => x.id === id);
+  openModal(`
+    <div class="m-h"><h2>${icon('truck', 18)} Book courier — <span class="mono">${s.id}</span></h2><button class="icon-btn m-x" data-action="close">${icon('x', 16)}</button></div>
+    <form data-form="courier" class="m-b frm">
+      <input type="hidden" name="id" value="${s.id}">
+      <div class="frow">
+        <div class="fld"><label>Courier</label><select name="courier"><option>DHL</option><option>FedEx</option><option>UPS</option><option>EMS</option></select></div>
+        <div class="fld"><label>Tracking number</label><input name="tracking" required placeholder="JD0146 00x xxx xx"></div>
+      </div>
+      <div class="m-f"><button type="button" class="btn btn-ghost" data-action="close">Cancel</button><button class="btn btn-primary">Mark courier out</button></div>
+    </form>`, 'narrow');
+}
+
+/* ============================ ACCESSORIES ============================ */
+function viewAccessories() {
+  let list = S.state.accessories;
+  if (S.f.accStatus && S.f.accStatus !== 'All') list = list.filter(a => a.status === S.f.accStatus);
+  if (S.q) list = list.filter(a => [a.id, a.item, a.spec, a.supplier, a.po].join(' ').toLowerCase().includes(S.q));
+  const T = todayISO();
+  const sortNum = { Received: 0, 'In Transit': 1, Ordered: 2, Planned: 3, Shortage: -1 };
+  list = [...list].sort((a, b) => sortNum[a.status] - sortNum[b.status] || a.requiredDate.localeCompare(b.requiredDate));
+  return `
+  <div class="toolbar">
+    <label class="tsearch">${icon('search', 14)}<input placeholder="Search item, supplier, PO…" value="${esc(S.q)}" data-input="gq"></label>
+    <select class="tsel" data-filter="accStatus"><option value="All">All statuses</option>${catalog().accStatuses.map(st => `<option${S.f.accStatus === st ? ' selected' : ''}>${st}</option>`).join('')}</select>
+    ${can() ? `<button class="btn btn-primary" data-action="new-acc">${icon('plus', 15)} New trims PO</button>` : ''}
+    <button class="btn btn-ghost" data-action="export" data-module="accessories">${icon('download', 15)} CSV</button>
+    <span class="count">${list.length} item${list.length === 1 ? '' : 's'}</span>
+  </div>
+  <div class="card tablewrap"><table>
+    <thead><tr><th>Item</th><th>Supplier / PO</th><th>Ordered / received</th><th>Coverage</th><th>Required</th><th>Status</th><th>Linked import</th></tr></thead>
+    <tbody>${list.length ? list.map(a => {
+      const dd = diffDays(a.requiredDate, T);
+      const pct = a.ordered ? Math.round(a.received / a.ordered * 100) : 0;
+      const crit = a.received < a.ordered && dd <= 7;
+      return `<tr class="click" data-action="open-acc" data-id="${a.id}">
+        <td><div class="td-main">${esc(a.item)}</div><div class="td-sub">${esc(a.spec)}</div></td>
+        <td><div>${esc(a.supplier)}</div><div class="td-sub mono">${esc(a.po)}</div></td>
+        <td class="mono">${num(a.received)} / ${num(a.ordered)} ${esc(a.unit)}</td>
+        <td><div class="prog ${crit ? 'warn' : ''}" style="width:120px"><i style="width:${pct}%"></i></div></td>
+        <td><div class="mono" style="font-weight:700">${fmtDate(a.requiredDate)}</div>
+            <div style="margin-top:3px">${a.received >= a.ordered ? chip('covered', 'green') : dd < 0 ? chip(`${-dd}d overdue`, 'red', ' chip-pulse') : dd <= 7 ? chip(`in ${dd}d`, 'amber') : chip(`in ${dd}d`, 'slate')}</div></td>
+        <td>${acChip(a.status)}</td>
+        <td>${a.shipmentId ? `<span class="link mono" data-action="open-ship" data-id="${a.shipmentId}">${a.shipmentId}</span>` : '<span class="text-mut">—</span>'}</td>
+      </tr>`;
+    }).join('') : `<tr><td colspan="7"><div class="empty">No trims POs match.</div></td></tr>`}</tbody>
+  </table></div>`;
+}
+function openAccModal(id) {
+  const a = S.state.accessories.find(x => x.id === id);
+  if (!a) return;
+  openModal(`
+    <div class="m-h">
+      <div style="min-width:0">
+        <h2><span class="mono">${a.id}</span> ${acChip(a.status)}</h2>
+        <div class="m-sub">${esc(a.item)} — ${esc(a.spec)}</div>
+      </div>
+      <button class="icon-btn m-x" data-action="close">${icon('x', 16)}</button>
+    </div>
+    <div class="m-b">
+      <div class="facts" style="grid-template-columns:repeat(4,1fr)">
+        <div class="fact"><div class="f-k">Supplier</div><div class="f-v">${esc(a.supplier)}</div></div>
+        <div class="fact"><div class="f-k">PO</div><div class="f-v mono">${esc(a.po)}</div></div>
+        <div class="fact"><div class="f-k">Ordered</div><div class="f-v mono">${num(a.ordered)} ${esc(a.unit)}</div></div>
+        <div class="fact"><div class="f-k">Received</div><div class="f-v mono">${num(a.received)} ${esc(a.unit)}</div></div>
+        <div class="fact"><div class="f-k">Ordered on</div><div class="f-v mono">${fmtDate(a.orderDate)}</div></div>
+        <div class="fact"><div class="f-k">Required on floor</div><div class="f-v mono">${fmtDate(a.requiredDate)}</div></div>
+        <div class="fact"><div class="f-k">Linked import</div><div class="f-v">${a.shipmentId ? `<span class="link mono" data-action="open-ship" data-id="${a.shipmentId}">${a.shipmentId}</span>` : '—'}</div></div>
+        <div class="fact"><div class="f-k">Gap</div><div class="f-v">${a.received >= a.ordered ? '<span class="text-green">Fully covered</span>' : `<span class="text-red">${num(a.ordered - a.received)} ${esc(a.unit)} short</span>`}</div></div>
+      </div>
+      ${can() ? `
+      <hr class="mut-line">
+      <form class="frm" data-form="acc-receive">
+        <input type="hidden" name="id" value="${a.id}">
+        <div class="frow">
+          <div class="fld"><label>Register receipt (received qty)</label><input type="number" name="received" min="0" max="${a.ordered}" value="${a.received}"></div>
+          <div class="fld"><label>Status</label><select name="status">${catalog().accStatuses.map(st => `<option${a.status === st ? ' selected' : ''}>${st}</option>`).join('')}</select></div>
+        </div>
+        <div style="display:flex;justify-content:flex-end"><button class="btn btn-primary btn-sm">Save receipt</button></div>
+      </form>` : `<div class="lock-tip" style="margin-top:14px">${icon('lock', 13)} read-only — logistics records receipts</div>`}
+    </div>`, 'mid');
+}
+function openAccForm() {
+  openModal(`
+    <div class="m-h"><h2>${icon('tag', 18)} New trims / accessories PO</h2><button class="icon-btn m-x" data-action="close">${icon('x', 16)}</button></div>
+    <form data-form="new-acc" class="m-b frm">
+      <div class="frow">
+        <div class="fld"><label>Item <span class="req">*</span></label><input name="item" required placeholder="Corozo buttons 20L"></div>
+        <div class="fld"><label>Specification</label><input name="spec" placeholder="Tagua nut, matte finish"></div>
+      </div>
+      <div class="frow">
+        <div class="fld"><label>Supplier <span class="req">*</span></label><select name="supplier" required>${catalog().suppliers.map(s => `<option>${esc(s.name)}</option>`).join('')}</select></div>
+        <div class="fld"><label>PO ref</label><input name="po" placeholder="auto-generated if empty"></div>
+      </div>
+      <div class="frow">
+        <div class="fld"><label>Ordered qty <span class="req">*</span></label><input type="number" name="ordered" min="1" required placeholder="24000"></div>
+        <div class="fld"><label>Unit</label><select name="unit"><option>pcs</option><option>m</option><option>sets</option><option>kg</option></select></div>
+      </div>
+      <div class="frow">
+        <div class="fld"><label>Required on floor <span class="req">*</span></label><input type="date" name="requiredDate" required></div>
+        <div class="fld"><label>Linked import shipment</label><select name="shipmentId"><option value="">— none —</option>${S.state.shipments.filter(s => s.status !== 'Received').map(s => `<option value="${s.id}">${s.id} · ${esc(s.supplier.name)}</option>`).join('')}</select></div>
+      </div>
+      <div class="m-f"><button type="button" class="btn btn-ghost" data-action="close">Cancel</button><button class="btn btn-primary">Create PO</button></div>
+    </form>`, 'narrow');
+}
+
+/* ============================ ANALYTICS ============================ */
+function viewAnalytics() {
+  const T = todayISO();
+  const sh = S.state.shipments;
+  const received = sh.filter(s => s.status === 'Received' && s.ata);
+  const onTimePct = received.length ? Math.round(received.filter(s => diffDays(s.ata, s.eta) <= 0).length / received.length * 100) : 100;
+  const late = received.filter(s => diffDays(s.ata, s.eta) > 0);
+  const avgLate = late.length ? (late.reduce((a, s) => a + diffDays(s.ata, s.eta), 0) / late.length).toFixed(1) : '0';
+  const activeDelayed = sh.filter(s => s.delayed && s.status !== 'Received');
+
+  // Pareto by count + total days lost
+  const agg = {};
+  sh.filter(s => s.delayReason).forEach(s => {
+    const r = agg[s.delayReason] = agg[s.delayReason] || { count: 0, days: 0 };
+    r.count++; r.days += s.status === 'Received' ? Math.max(0, diffDays(s.ata, s.eta)) : delayDays(s) || 3;
+  });
+  const pareto = Object.entries(agg).map(([code, r]) => ({ code, ...r, label: delayLabel(code) })).sort((a, b) => b.count - a.count);
+
+  // monthly on-time trend (last 6 months incl. current)
+  const months = [];
+  for (let i = 5; i >= 0; i--) { const d0 = new Date(); d0.setDate(1); d0.setMonth(d0.getMonth() - i); months.push(d0); }
+  const trend = months.map(m0 => {
+    const next = new Date(m0); next.setMonth(next.getMonth() + 1);
+    const k = s => parseD(s.ata) >= m0 && parseD(s.ata) < next;
+    const rec = received.filter(k);
+    const pctv = rec.length ? Math.round(rec.filter(s => diffDays(s.ata, s.eta) <= 0).length / rec.length * 100) : null;
+    return { m: m0.toLocaleDateString('en-GB', { month: 'short' }), v: pctv == null ? 0 : pctv, n: rec.length };
+  });
+
+  const f = S.f;
+  const tableRows = activeDelayed.filter(s => (!f.buyer || f.buyer === 'All' || s.buyer === f.buyer)).sort((a, b) => b.eta.localeCompare(a.eta));
+
+  return `
+  <div class="kpis">
+    <div class="kpi" style="--kc:#15803d"><span class="k-label">On-time arrivals</span><div class="k-row"><span class="k-num">${onTimePct}%</span>${chip(`${received.length} received`, 'green')}</div><span class="k-sub">last 6 months · ATA vs ETA</span></div>
+    <div class="kpi" style="--kc:#d97706"><span class="k-label">Avg slip when late</span><div class="k-row"><span class="k-num">${avgLate}d</span>${chip(`${late.length} late arrivals`, 'amber')}</div><span class="k-sub">planning buffer benchmark</span></div>
+    <div class="kpi" style="--kc:#dc2626"><span class="k-label">Days lost YTD</span><div class="k-row"><span class="k-num">${pareto.reduce((a, p) => a + p.days, 0)}</span>${chip('days', 'red')}</div><span class="k-sub">cumulative delay across shipments</span></div>
+    <div class="kpi" style="--kc:#7c3aed"><span class="k-label">Top root cause</span><div class="k-row" style="flex-direction:column;align-items:flex-start"><span style="font-size:15px;font-weight:800;line-height:1.3">${pareto[0] ? esc(delayLabel(pareto[0].code)) : '—'}</span></div><span class="k-sub">${pareto[0] ? `${pareto[0].count} occurrence${pareto[0].count > 1 ? 's' : ''} · ${pareto[0].days}d lost` : ''}</span></div>
+  </div>
+
+  <div class="grid-2e">
+    <div class="card">
+      <div class="card-h"><h3>Delay Pareto — coded reasons</h3><span class="sub">count of shipments · days lost</span></div>
+      <div class="card-b">
+        ${pareto.length ? hbars(pareto.map(p => ({ label: delayLabel(p.code), value: p.count, days: p.days, suffix: `${p.days}d lost` })), it => it.days > 10 ? 'linear-gradient(90deg,#ef4444,#b91c1c)' : 'linear-gradient(90deg,#f59e0b,#d97706)') : '<div class="empty">No delay data yet.</div>'}
+        <hr class="mut-line"><div class="kv-inline">Codes: ${catalog().delayReasons.map(r => `<b title="${esc(r.cat)}">${r.code}</b> ${esc(r.label)}`).join(' · ')}</div>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-h"><h3>On-time trend</h3><span class="sub">% arrivals on or before ETA</span></div>
+      <div class="card-b">${lineChart(trend)}
+        <div class="kv-inline" style="margin-top:8px">Months with no arrivals are shown at 0. Target ≥ 85% — world-class knitwear mills run 92–96%.</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-h"><h3>Active delays — action board</h3><span class="sub">logistics assigns the reason code; merchandising sees the impact instantly</span>
+      <div class="right"><select class="tsel" data-filter="buyer"><option value="All">All buyers</option>${catalog().buyers.map(b => `<option${f.buyer === b ? ' selected' : ''}>${b}</option>`).join('')}</select></div></div>
+    <div class="tablewrap"><table>
+      <thead><tr><th>Shipment</th><th>Buyer</th><th>ETA</th><th>Days late</th><th>Status</th><th>Reason code</th><th>Detail</th></tr></thead>
+      <tbody>${tableRows.length ? tableRows.map(s => `
+        <tr>
+          <td class="click" data-action="open-ship" data-id="${s.id}"><span class="td-main mono link">${s.id}</span><div class="td-sub">${esc(s.po)}</div></td>
+          <td>${chip(esc(s.buyer), 'outline')}</td>
+          <td class="mono">${fmtDate(s.eta)}</td>
+          <td><b class="days-chip text-red">${delayDays(s) || '—'}d</b></td>
+          <td>${stChip(s)}</td>
+          <td>${can() ? `<select class="tsel" style="padding:5px 8px;font-size:12px" data-status-of="${s.id}" data-status-what="ship-delay">
+              <option value="">— assign —</option>
+              ${catalog().delayReasons.map(r => `<option value="${r.code}"${s.delayReason === r.code ? ' selected' : ''}>${r.code} · ${r.label}</option>`).join('')}
+            </select>` : `<span class="chip chip-red">${delayLabel(s.delayReason)}</span>`}</td>
+          <td style="max-width:340px"><span class="td-sub" style="display:block;white-space:normal">${esc(s.delayNote || '—')}</span></td>
+        </tr>`).join('') : `<tr><td colspan="7"><div class="empty">No active delays — every inbound is on schedule. 🎯</div></td></tr>`}</tbody>
+    </table></div>
+  </div>`;
+}
+
+/* ============================ ACTIVITY ============================ */
+const MODULE_META = {
+  shipment: { ic: 'ship', cls: 'ai-teal', name: 'Shipment' },
+  sample: { ic: 'shirt', cls: 'ai-violet', name: 'Sample' },
+  accessory: { ic: 'tag', cls: 'ai-amber', name: 'Trims' },
+  system: { ic: 'refresh', cls: 'ai-slate', name: 'System' }
+};
+function feedHtml(items, compact) {
+  let lastDay = '';
+  return items.map(a => {
+    const m = MODULE_META[a.module] || MODULE_META.system;
+    const u = user(a.userId) || { name: 'System', color: '#94a3b8', role: 'system' };
+    const day = new Date(a.ts).toLocaleDateString('en-GB', { weekday: 'short', day: '2-digit', month: 'short' });
+    const dayHead = !compact && day !== lastDay ? `<div class="feed-day">${day === new Date().toLocaleDateString('en-GB', { weekday: 'short', day: '2-digit', month: 'short' }) ? 'Today' : day}</div>` : '';
+    lastDay = day;
+    const refRoute = a.module === 'accessory' ? 'open-acc' : a.module === 'sample' ? 'open-sample' : 'open-ship';
+    return `${dayHead}<div class="feed-it">
+      <span class="f-ic ${m.cls}">${icon(m.ic, 14)}</span>
+      <span class="f-txt"><b>${esc(u.name)}</b> <span style="color:var(--mut)">${esc(a.action)}</span> <span class="f-ref" data-action="${refRoute}" data-id="${esc(a.refId)}">${esc(a.refId)}</span><br>${esc(a.detail)}</span>
+      <span class="f-time">${ago(a.ts)}</span>
+    </div>`;
+  }).join('');
+}
+function viewActivity() {
+  return `<div class="card">${feedHtml(S.state.activity)}</div>`;
+}
+
+/* ============================ IMPORT TIMELINE (YARN + TRIMS) ============================ */
+function importRows() {
+  const T = todayISO(), rows = [];
+  S.state.shipments.forEach(s => {
+    if (s.status === 'Received' && s.ata && -diffDays(s.ata, T) > 14) return; // hide received older than 2 weeks
+    rows.push({
+      kind: 'Yarn', ref: s.id, title: s.commodity, sub: `${s.supplier.name} · ${s.mode}`,
+      supplier: s.supplier.name, buyer: s.buyer, po: s.po, date: s.eta, dateLabel: 'ETA',
+      status: s.status, statusChip: stChip(s), countChip: etaChipHtml(s),
+      delayed: s.delayed, delayText: s.delayed ? delayLabel(s.delayReason) : '',
+      progress: s.progress, progTitle: docsReady(s) + '/6 docs ready', pulse: s.delayed,
+      act: 'open-ship', src: s
+    });
+  });
+  S.state.accessories.forEach(a => {
+    if (a.received >= a.ordered) return; // fully covered → not inbound
+    const link = a.shipmentId ? S.state.shipments.find(x => x.id === a.shipmentId) : null;
+    const dd = diffDays(a.requiredDate, T), over = dd < 0;
+    rows.push({
+      kind: 'Trims', ref: a.id, title: a.item, sub: a.spec || a.po,
+      supplier: a.supplier, buyer: link ? link.buyer : 'Shared', po: a.po, date: a.requiredDate, dateLabel: 'Needed on floor',
+      status: a.status, statusChip: acChip(a.status),
+      countChip: over ? chip(`${-dd}d overdue`, 'red', ' chip-pulse') : chip(`in ${dd}d`, dd <= 7 ? 'amber' : 'slate'),
+      delayed: a.status === 'Shortage' || over,
+      delayText: a.status === 'Shortage' ? 'Shortage flagged' : over ? 'Past required date' : '',
+      progress: a.ordered ? Math.round(a.received / a.ordered * 100) : 0,
+      progTitle: `${num(a.received)}/${num(a.ordered)} ${a.unit} received`, pulse: over,
+      act: 'open-acc', src: a
+    });
+  });
+  return rows;
+}
+function viewImports() {
+  const f = S.f, T = todayISO();
+  let rows = importRows();
+  if (f.importType && f.importType !== 'All') rows = rows.filter(r => r.kind === f.importType);
+  if (f.impBuyer && f.impBuyer !== 'All') rows = rows.filter(r => r.buyer === f.impBuyer);
+  if (f.importFlag && f.importFlag !== 'all') {
+    if (f.importFlag === 'delayed') rows = rows.filter(r => r.delayed);
+    else if (f.importFlag === 'soon') rows = rows.filter(r => !r.src.ata && diffDays(r.date, T) >= 0 && diffDays(r.date, T) <= 7);
+    else if (f.importFlag === 'customs') rows = rows.filter(r => String(r.status).indexOf('Customs') === 0);
+  }
+  if (S.q) rows = rows.filter(r => [r.ref, r.title, r.sub, r.supplier, r.buyer, r.po].join(' ').toLowerCase().includes(S.q));
+  rows.sort((a, b) => (a.delayed === b.delayed ? a.date.localeCompare(b.date) : a.delayed ? -1 : 1));
+
+  const yarnN = rows.filter(r => r.kind === 'Yarn').length;
+  const trimN = rows.filter(r => r.kind === 'Trims').length;
+  const delN = rows.filter(r => r.delayed).length;
+  const opt = (v, l, sel) => `<option value="${esc(v)}"${sel ? ' selected' : ''}>${esc(l)}</option>`;
+  return `
+  <div class="toolbar">
+    <label class="tsearch">${icon('search', 14)}<input placeholder="Search item, ref, supplier, buyer…" value="${esc(S.q)}" data-input="gq"></label>
+    <select class="tsel" data-filter="importType">${opt('All', 'Yarn + Trims', !f.importType || f.importType === 'All')}${opt('Yarn', 'Yarn only', f.importType === 'Yarn')}${opt('Trims', 'Trims only', f.importType === 'Trims')}</select>
+    <select class="tsel" data-filter="impBuyer">${opt('All', 'All buyers', !f.impBuyer || f.impBuyer === 'All')}${catalog().buyers.map(b => opt(b, b, f.impBuyer === b)).join('')}</select>
+    <select class="tsel" data-filter="importFlag">${opt('all', 'All statuses', !f.importFlag || f.importFlag === 'all')}${opt('delayed', 'Delayed / shortages', f.importFlag === 'delayed')}${opt('soon', 'Arriving ≤ 7 days', f.importFlag === 'soon')}${opt('customs', 'In customs', f.importFlag === 'customs')}</select>
+    <button class="btn btn-ghost" data-action="export" data-module="shipments">${icon('download', 15)} Yarn CSV</button>
+    <button class="btn btn-ghost" data-action="export" data-module="accessories">${icon('download', 15)} Trims CSV</button>
+    <span class="count">${yarnN} yarn · ${trimN} trims inbound · <b class="${delN ? 'text-red' : 'text-green'}">${delN} delayed / issue${delN === 1 ? '' : 's'}</b></span>
+  </div>
+  <div class="card tablewrap"><table>
+    <thead><tr><th>Import</th><th>Item</th><th>Supplier</th><th>Buyer / PO</th><th>Date</th><th>Countdown</th><th>Status</th><th>Delay / issue</th><th>Progress</th></tr></thead>
+    <tbody>${rows.length ? rows.map(r => `
+      <tr class="click" data-action="${r.act}" data-id="${r.ref}">
+        <td><span class="chip ${r.kind === 'Yarn' ? 'chip-teal' : 'chip-amber'}">${r.kind}</span><div class="td-main mono" style="margin-top:4px;font-size:12px">${r.ref}</div></td>
+        <td><div class="td-main">${esc(r.title)}</div><div class="td-sub">${esc(r.sub)}</div></td>
+        <td>${esc(r.supplier)}</td>
+        <td>${chip(esc(r.buyer), 'outline')}<div class="td-sub mono" style="margin-top:3px">${esc(r.po)}</div></td>
+        <td><div class="mono" style="font-weight:700">${fmtDate(r.date)}</div><div class="td-sub">${r.dateLabel}</div></td>
+        <td>${r.countChip}</td>
+        <td>${r.statusChip}</td>
+        <td>${r.delayed ? `<span class="chip chip-red${r.pulse ? ' chip-pulse' : ''}">${esc(r.delayText)}</span>` : '<span class="text-mut">—</span>'}</td>
+        <td><div class="prog ${r.delayed ? 'warn' : ''}"><i style="width:${r.progress}%"></i></div><div class="td-sub" style="margin-top:3px">${r.progTitle}</div></td>
+      </tr>`).join('') : `<tr><td colspan="9"><div class="empty">Nothing inbound matches your filters.</div></td></tr>`}</tbody>
+  </table></div>
+  <div class="kv-inline" style="margin-top:10px">Merchandising view — click any row for full detail, ETA history, documents and discussion. The shipping desk keeps ETAs, delay codes, documents and receipts up to date; this page reflects it instantly.</div>`;
+}
+
+/* ---------------- notif dropdown ---------------- */
+function notifPopHtml() {
+  const ns = notifs();
+  return `<div class="notif-pop">
+    <div class="np-h">Notifications <span class="chip chip-slate">${ns.length}</span></div>
+    <div class="np-list">${ns.length ? ns.map(n => `
+      <div class="np-it" data-action="notif-go" data-go="${n.go}" data-ref="${n.ref || ''}">
+        <span class="ai-ic ai-${n.tone}" style="flex:0 0 30px;height:30px;border-radius:8px;display:grid;place-items:center">${icon(n.icon, 14)}</span>
+        <span><span class="np-t">${esc(n.t)}</span><br><span class="np-s">${esc(n.s)}</span></span>
+      </div>`).join('') : '<div class="empty">Nothing needs attention.</div>'}</div>
+  </div>`;
+}
+
+</script>
+<script>
+/* ==================== APP ENGINE (boots on DOMContentLoaded) ==================== */
+'use strict';
+/* ============================================================
+   FlexKnit Link — core engine: state, helpers, icons, charts,
+   notifications, router shell, delegated events.
+   View templates live in views.js.
+   ============================================================ */
+
+const S = { state: null, user: null, route: 'dashboard', q: '', f: {}, shipTab: 'overview', notifOpen: false, modal: null };
+
+/* ---------------- helpers ---------------- */
+const $  = (sel, el) => (el || document).querySelector(sel);
+const $$ = (sel, el) => Array.from((el || document).querySelectorAll(sel));
+const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+
+function parseD(s) { if (!s) return null; const [y, m, d] = s.split('-').map(Number); return new Date(y, m - 1, d); }
+function diffDays(a, b) { return Math.round((parseD(a) - parseD(b)) / 864e5); }
+function todayISO() { const t = new Date(); return `${t.getFullYear()}-${String(t.getMonth() + 1).padStart(2, '0')}-${String(t.getDate()).padStart(2, '0')}`; }
+function fmtDate(s) { if (!s) return '—'; return parseD(s).toLocaleDateString('en-GB', { day: '2-digit', month: 'short' }); }
+function fmtDateY(s) { if (!s) return '—'; return parseD(s).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' }); }
+function fmtDT(iso) { return new Date(iso).toLocaleString('en-GB', { day: '2-digit', month: 'short', hour: '2-digit', minute: '2-digit' }); }
+function ago(iso) {
+  const m = Math.round((Date.now() - new Date(iso)) / 6e4);
+  if (m < 1) return 'just now'; if (m < 60) return m + 'm ago';
+  const h = Math.round(m / 60); if (h < 24) return h + 'h ago';
+  const dd = Math.round(h / 24); if (dd < 7) return dd + 'd ago';
+  return fmtDT(iso);
+}
+const num = n => (+n || 0).toLocaleString('en-US');
+const money = n => n >= 1e6 ? '$' + (n / 1e6).toFixed(2) + 'M' : '$' + Math.round(n).toLocaleString();
+const initials = n => n.split(' ').map(w => w[0]).slice(0, 2).join('').toUpperCase();
+
+/* ---- local, in-browser API (standalone build: no server needed) ---- */
+const LS_KEY = 'fk-standalone-state-v1';
+function lsOk() { try { localStorage.setItem('__fk_t', '1'); localStorage.removeItem('__fk_t'); return true; } catch (e) { return false; } }
+function loadState() {
+  if (lsOk()) {
+    try {
+      const raw = localStorage.getItem(LS_KEY);
+      if (raw) {
+        const st = JSON.parse(raw);
+        if (st.meta && st.meta.seededAt && st.meta.seededAt.slice(0, 10) === todayISO()) { S.state = st; return st; }
+      }
+    } catch (e) {}
+  }
+  const fresh = FlexSeed.build();
+  S.state = fresh; saveState();
+  return fresh;
+}
+function saveState(st) { if (lsOk()) { try { localStorage.setItem(LS_KEY, JSON.stringify(st || S.state)); } catch (e) {} } }
+function logAct(module, refId, action, detail, userId) {
+  S.state.activity.unshift({ id: 'a' + Date.now() + Math.random().toString(36).slice(2, 6), ts: new Date().toISOString(), userId: userId || null, module, refId, action, detail: detail || '' });
+  if (S.state.activity.length > 400) S.state.activity = S.state.activity.slice(0, 400);
+}
+function nextIdLocal(kind, prefix, pad) {
+  let max = 0;
+  S.state[kind].forEach(x => { const m = /(\d+)$/.exec(x.id); if (m) max = Math.max(max, +m[1]); });
+  return prefix + String(max + 1).padStart(pad || 4, '0');
+}
+const CSV_MAP = {
+  shipments: { head: ['ID','PO','Buyer','Supplier','Commodity','Qty (kg)','Value (USD)','Incoterm','Mode','POL','POD','Via','Carrier','Vessel','Container','ETD','ETA','ATA','Status','Delayed','DelayReason','Progress %','MBL/AWB','Docs ready'],
+    row: s => [s.id, s.po, s.buyer, s.supplier.name, s.commodity, s.qtyKg, s.valueUsd, s.incoterm, s.mode, s.pol, s.pod, s.via || '', s.carrier, s.vessel, s.container, s.etd, s.eta, s.ata || '', s.status, s.delayed ? 'YES' : '', s.delayReason || '', s.progress, s.mbl, Object.values(s.docs).filter(Boolean).length + '/6'] },
+  samples: { head: ['ID','Style','Name','Buyer','Season','Type','Qty','Requested','Due','Status','Courier','Tracking'],
+    row: s => [s.id, s.style, s.styleName, s.buyer, s.season, s.type, s.qty, s.requestDate, s.dueDate, s.status, s.courier || '', s.tracking || ''] },
+  accessories: { head: ['ID','Item','Spec','Supplier','PO','Ordered','Received','Unit','Order date','Required date','Status','Linked shipment'],
+    row: a => [a.id, a.item, a.spec, a.supplier, a.po, a.ordered, a.received, a.unit, a.orderDate, a.requiredDate, a.status, a.shipmentId || ''] }
+};
+function downloadCSV(module) {
+  const C = CSV_MAP[module]; if (!C) return;
+  const esc = v => { v = String(v ?? ''); return /[",\n]/.test(v) ? '"' + v.replace(/"/g, '""') + '"' : v; };
+  const csv = [C.head.map(esc).join(','), ...S.state[module].map(it => C.row(it).map(esc).join(','))].join('\n');
+  try {
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(new Blob([csv], { type: 'text/csv' }));
+    a.download = 'flexknit-' + module + '-' + todayISO() + '.csv';
+    document.body.appendChild(a); a.click(); a.remove();
+    toast('CSV downloaded');
+  } catch (e) { toast('Download blocked in this embedded preview — download the HTML file and open it in your browser', 'err'); }
+}
+async function api(path, opts = {}) {
+  await new Promise(r => setTimeout(r, 90)); // tiny latency so spinners/toasts feel real
+  const method = opts.method || 'GET';
+  const b = opts.body ? JSON.parse(opts.body) : {};
+  if (method === 'GET' && path === '/api/state') { if (!S.state) loadState(); return S.state; }
+  if (method === 'POST' && path === '/api/reset') { S.state = FlexSeed.build(); saveState(); return { ok: true }; }
+
+  let m;
+  if (method === 'POST' && path === '/api/shipments') {
+    const v = b.data || {};
+    if (!v.po || !v.buyer || !v.supplier || !v.commodity || !v.etd || !v.eta) throw new Error('PO, buyer, supplier, commodity, ETD and ETA are required.');
+    const item = {
+      id: nextIdLocal('shipments', 'SHP-2026-'), po: v.po, buyer: v.buyer,
+      supplier: typeof v.supplier === 'string' ? { name: v.supplier, country: 'China', city: '' } : v.supplier,
+      commodity: v.commodity, qtyKg: +v.qtyKg || 0, valueUsd: +v.valueUsd || 0, incoterm: v.incoterm || 'FOB', mode: v.mode || 'Sea',
+      pol: v.pol || 'CNNGB', pod: v.pod || 'MGTMM', via: v.via || null, carrier: v.carrier || '', vessel: v.vessel || '', container: v.container || 'Pending',
+      etd: v.etd, eta: v.eta, ata: null, status: v.status || 'Booked', delayed: false, delayReason: null, delayNote: '', progress: 8,
+      mbl: v.mbl || '', docs: { ci: false, pl: false, bl: false, co: false, msds: false, sgs: false },
+      etaHistory: [{ eta: v.eta, on: todayISO(), by: b.userId || null, note: 'Initial schedule' }], comments: []
+    };
+    S.state.shipments.unshift(item);
+    logAct('shipment', item.id, 'Shipment created', item.supplier.name + ' → ' + item.pod + ' · ETA ' + item.eta, b.userId);
+    saveState(); return { item };
+  }
+  if ((m = path.match(/^\/api\/shipments\/([^/]+)$/)) && method === 'PATCH') {
+    const s = S.state.shipments.find(x => x.id === decodeURIComponent(m[1]));
+    if (!s) throw new Error('shipment not found');
+    const p = b.patch || {};
+    const prevStatus = s.status, prevEta = s.eta;
+    if (p.eta && p.eta !== prevEta) {
+      (s.etaHistory = s.etaHistory || []).push({ eta: p.eta, on: todayISO(), by: b.userId || null, note: b.note || '' });
+      logAct('shipment', s.id, 'ETA updated', 'ETA ' + prevEta + ' → ' + p.eta + (b.note ? ' · ' + b.note : ''), b.userId);
+    }
+    if (p.delayed === true && !p.delayReason && !s.delayReason) throw new Error('A delay reason code is required to flag a shipment as delayed.');
+    if (p.delayed === false) { p.delayReason = null; p.delayNote = ''; }
+    if (p.docs) { s.docs = Object.assign({}, s.docs, p.docs); delete p.docs; }
+    Object.assign(s, p);
+    if (p.status && p.status !== prevStatus) logAct('shipment', s.id, 'Status changed', prevStatus + ' → ' + p.status, b.userId);
+    if (p.delayed === true) logAct('shipment', s.id, 'Delay reported', (p.delayReason || s.delayReason || '') + ' · ' + ((p.delayNote || s.delayNote || '').slice(0, 90)), b.userId);
+    saveState(); return { item: s };
+  }
+  if (method === 'POST' && path === '/api/samples') {
+    const v = b.data || {};
+    if (!v.style || !v.buyer || !v.type || !v.dueDate) throw new Error('Style, buyer, type and due date are required.');
+    const item = {
+      id: nextIdLocal('samples', 'SMP-26-', 3), style: v.style, styleName: v.styleName || '', buyer: v.buyer,
+      season: v.season || 'FW26', type: v.type, qty: v.qty || '1 pc', requestedBy: b.userId || null,
+      requestDate: todayISO(), dueDate: v.dueDate, status: 'Requested', courier: null, tracking: null, comments: []
+    };
+    S.state.samples.unshift(item);
+    logAct('sample', item.id, 'Sample requested', item.type + ' · ' + item.buyer + ' · ' + item.style + ' ' + item.styleName, b.userId);
+    saveState(); return { item };
+  }
+  if ((m = path.match(/^\/api\/samples\/([^/]+)$/)) && method === 'PATCH') {
+    const s = S.state.samples.find(x => x.id === decodeURIComponent(m[1]));
+    if (!s) throw new Error('sample not found');
+    const p = b.patch || {}; const prev = s.status;
+    Object.assign(s, p);
+    if (p.status && p.status !== prev) logAct('sample', s.id, 'Status changed', prev + ' → ' + p.status + (s.courier ? ' (' + s.courier + ' ' + (s.tracking || '') + ')' : ''), b.userId);
+    saveState(); return { item: s };
+  }
+  if (method === 'POST' && path === '/api/accessories') {
+    const v = b.data || {};
+    if (!v.item || !v.supplier || !v.requiredDate) throw new Error('Item, supplier and required date are required.');
+    const item = {
+      id: nextIdLocal('accessories', 'ACC-26-', 3), item: v.item, spec: v.spec || '', supplier: v.supplier,
+      po: v.po || 'TR-' + Math.floor(88000 + Math.random() * 999), ordered: +v.ordered || 0, received: 0, unit: v.unit || 'pcs',
+      orderDate: todayISO(), requiredDate: v.requiredDate, status: v.status || 'Ordered', shipmentId: v.shipmentId || null
+    };
+    S.state.accessories.unshift(item);
+    logAct('accessory', item.id, 'PO created', item.item + ' · ' + item.ordered.toLocaleString() + ' ' + item.unit + ' · ' + item.supplier, b.userId);
+    saveState(); return { item };
+  }
+  if ((m = path.match(/^\/api\/accessories\/([^/]+)$/)) && method === 'PATCH') {
+    const a = S.state.accessories.find(x => x.id === decodeURIComponent(m[1]));
+    if (!a) throw new Error('accessory not found');
+    const p = b.patch || {}; const prev = a.status;
+    if (p.received != null) p.received = Math.max(0, Math.min(+p.received, a.ordered));
+    Object.assign(a, p);
+    if (p.received != null) logAct('accessory', a.id, 'Receipt updated', a.received.toLocaleString() + ' / ' + a.ordered.toLocaleString() + ' ' + a.unit + ' received', b.userId);
+    if (p.status && p.status !== prev) logAct('accessory', a.id, 'Status changed', prev + ' → ' + p.status, b.userId);
+    saveState(); return { item: a };
+  }
+  if ((m = path.match(/^\/api\/(shipments|samples)\/([^/]+)\/comments$/)) && method === 'POST') {
+    const list = m[1] === 'shipments' ? S.state.shipments : S.state.samples;
+    const item = list.find(x => x.id === decodeURIComponent(m[2]));
+    if (!item) throw new Error('not found');
+    const text = String(b.text || '').trim();
+    if (!text) throw new Error('empty comment');
+    (item.comments = item.comments || []).push({ id: 'c' + Date.now(), by: b.userId || null, text: text.slice(0, 800), at: new Date().toISOString() });
+    logAct(m[1] === 'shipments' ? 'shipment' : 'sample', item.id, 'Commented', text.slice(0, 120), b.userId);
+    saveState(); return { item };
+  }
+  if (path.startsWith('/api/export')) { downloadCSV(new URLSearchParams(path.split('?')[1] || '').get('module') || 'shipments'); return { ok: true }; }
+  throw new Error('Unknown route: ' + path);
+}
+/* storage-safe helpers (localStorage throws in sandboxed/opaque-origin contexts) */
+const lsGet = k => { try { return localStorage.getItem(k); } catch (e) { return null; } };
+const lsSet = (k, v) => { try { localStorage.setItem(k, v); } catch (e) {} };
+const lsDel = k => { try { localStorage.removeItem(k); } catch (e) {} };
+async function refresh() {
+  if (!S.state) S.state = loadState();
+  if (S.user) renderView();
+  updateBadges();
+}
+
+/* ---------------- icons ---------------- */
+const IC = {
+  grid: '<rect x="3" y="3" width="7.5" height="7.5" rx="1.8"/><rect x="13.5" y="3" width="7.5" height="7.5" rx="1.8"/><rect x="3" y="13.5" width="7.5" height="7.5" rx="1.8"/><rect x="13.5" y="13.5" width="7.5" height="7.5" rx="1.8"/>',
+  ship: '<path d="M4 8.5h16v6.5a5 5 0 0 1-5 5H9a5 5 0 0 1-5-5z"/><path d="M7.5 8.5V6A2 2 0 0 1 9.5 4h5A2 2 0 0 1 16.5 6v2.5"/><path d="M4 13h16"/><path d="M8.5 8.5v11M12 8.5v11M15.5 8.5v11" opacity=".55"/>',
+  shirt: '<path d="M20.38 3.46 16 2a4 4 0 0 1-8 0L3.62 3.46a2 2 0 0 0-1.34 2.23l.58 3.47a1 1 0 0 0 .99.84H6v10c0 1.1.9 2 2 2h8a2 2 0 0 0 2-2V10h2.15a1 1 0 0 0 .99-.84l.58-3.47a2 2 0 0 0-1.34-2.23z"/>',
+  tag: '<path d="M12.586 2.586A2 2 0 0 0 11.172 2H4a2 2 0 0 0-2 2v7.172a2 2 0 0 0 .586 1.414l8.704 8.704a2.426 2.426 0 0 0 3.42 0l6.58-6.58a2.426 2.426 0 0 0 0-3.42z"/><circle cx="7.5" cy="7.5" r="1.2"/>',
+  bar: '<path d="M3 3v18h18"/><path d="M8 17v-6M13 17V7M18 17v-9"/>',
+  pulse: '<path d="M3 12h4l3-8 4 16 3-8h4"/>',
+  bell: '<path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/><path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"/>',
+  search: '<circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/>',
+  plus: '<path d="M5 12h14M12 5v14"/>',
+  download: '<path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><path d="m7 10 5 5 5-5"/><path d="M12 15V3"/>',
+  x: '<path d="M18 6 6 18M6 6l12 12"/>',
+  clock: '<circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/>',
+  alert: '<path d="M10.29 3.86 1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><path d="M12 9v4M12 17h.01"/>',
+  check: '<path d="M20 6 9 17l-5-5"/>',
+  doc: '<path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/><path d="M9 13h6M9 17h6"/>',
+  plane: '<path d="M17.8 19.2 16 11l3.5-3.5C21 6 21.5 4 21 3c-1-.5-3 0-4.5 1.5L13 8 4.8 6.2c-.5-.1-.9.1-1.1.5l-.3.5c-.2.5-.1 1 .3 1.3L9 12l-2 3H4l-1 1 3 2 2 3 1-1v-3l3-2 3.5 5.3c.3.4.8.5 1.3.3l.5-.2c.4-.3.6-.7.5-1.2z"/>',
+  anchor: '<circle cx="12" cy="5" r="3"/><path d="M12 22V8"/><path d="M5 12H2a10 10 0 0 0 20 0h-3"/>',
+  truck: '<path d="M10 17h4V5H2v12h3"/><path d="M20 17h2v-3.34a4 4 0 0 0-1.17-2.83L19 9h-5v8h1"/><circle cx="7.5" cy="17.5" r="2.5"/><circle cx="17.5" cy="17.5" r="2.5"/>',
+  comment: '<path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>',
+  refresh: '<path d="M3 12a9 9 0 0 1 15-6.7L21 8"/><path d="M21 3v5h-5"/><path d="M21 12a9 9 0 0 1-15 6.7L3 16"/><path d="M3 21v-5h5"/>',
+  arrow: '<path d="M5 12h14"/><path d="m13 5 7 7-7 7"/>',
+  lock: '<rect x="4" y="11" width="16" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/>',
+  out: '<path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><path d="m16 17 5-5-5-5"/><path d="M21 12H9"/>',
+  cal: '<rect x="3" y="4" width="18" height="17" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/>',
+  chev: '<path d="m6 9 6 6 6-6"/>',
+  flag: '<path d="M4 22V4a1 1 0 0 1 .4-.8A6 6 0 0 1 8 2c3 0 5 2 7.5 2 1.3 0 2.4-.3 3.1-.6a.5.5 0 0 1 .7.5V13a1 1 0 0 1-.4.8A6 6 0 0 1 15.5 15c-3 0-5-2-7.5-2-1.3 0-2.4.3-3.1.6"/>',
+  box: '<path d="M21 8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/><path d="m3.3 7 8.7 5 8.7-5"/><path d="M12 22V12"/>',
+  edit: '<path d="M17 3a2.83 2.83 0 0 1 4 4L7.5 20.5 2 22l1.5-5.5z"/>',
+  knit: '<path d="M4 9l5-5 5 5 5-5 5 5" transform="scale(0.88) translate(1,2)"/><path d="M4 17l5-5 5 5 5-5 5 5" transform="scale(0.88) translate(1,2)"/>'
+};
+const icon = (name, size = 17) => `<svg width="${size}" height="${size}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">${IC[name] || ''}</svg>`;
+
+/* ---------------- domain meta ---------------- */
+const SHIP_ST = {
+  'Booked': 'slate', 'In Production': 'indigo', 'Ready to Ship': 'blue', 'In Transit': 'teal',
+  'Transshipment': 'cyan', 'Customs – Toamasina': 'amber', 'Customs – Ivato': 'amber',
+  'Cleared – Inland': 'green', 'Received': 'green'
+};
+const SAMPLE_ST = { 'Requested': 'slate', 'In Development': 'indigo', 'Courier Out': 'blue', 'Under Review': 'amber', 'Approved': 'green', 'Redo': 'red' };
+const ACC_ST = { 'Planned': 'slate', 'Ordered': 'indigo', 'In Transit': 'teal', 'Received': 'green', 'Shortage': 'red' };
+const chip = (label, color, extra) => `<span class="chip chip-${color}${extra || ''}">${label}</span>`;
+const stChip = s => chip(esc(s), SHIP_ST[s] || 'slate');
+const smChip = s => chip(esc(s), SAMPLE_ST[s] || 'slate');
+const acChip = s => chip(esc(s), ACC_ST[s] || 'slate');
+
+const catalog = () => S.state.catalog;
+const user = id => S.state.users.find(u => u.id === id);
+const avatar = (u, cls) => `<span class="avatar ${cls || ''}" style="background:${u.color}" title="${esc(u.name)}">${initials(u.name)}</span>`;
+const can = () => S.user && S.user.role !== 'merchandising'; // logistics & admin can operate
+const delayLabel = code => { const r = catalog().delayReasons.find(d => d.code === code); return r ? `${r.code} · ${r.label}` : (code || '—'); };
+
+function delayDays(s) {
+  if (s.status === 'Received') return Math.max(0, diffDays(s.ata, s.eta));
+  return Math.max(0, -diffDays(s.eta, todayISO()));
+}
+function etaChipHtml(s) {
+  if (s.status === 'Received') {
+    const late = delayDays(s);
+    return late ? chip(`${late}d late`, 'red') : chip('On time', 'green');
+  }
+  const drem = diffDays(s.eta, todayISO());
+  const label = drem > 0 ? `ETA in ${drem}d` : drem === 0 ? 'ETA today' : `${-drem}d past ETA`;
+  const tone = s.delayed ? 'red' : drem <= 3 ? 'amber' : 'slate';
+  return chip(label + (s.delayed ? ' · delayed' : ''), tone, s.delayed ? ' chip-pulse' : '');
+}
+function docsReady(s) { return Object.values(s.docs).filter(Boolean).length; }
+function polName(code) { const p = catalog().pols.find(x => x.code === code); return p ? p.name : code; }
+function podName(code) { const p = catalog().pods.find(x => x.code === code); return p ? p.name : code; }
+function viaName(code) { const p = catalog().vias.find(x => x.code === code); return p ? p.name : code; }
+
+/* ---------------- charts (hand-rolled SVG) ---------------- */
+function donut(pct, color, size = 40, sw = 5) {
+  const r = (size - sw) / 2, c = 2 * Math.PI * r;
+  return `<svg class="docring" width="${size}" height="${size}"><circle cx="${size / 2}" cy="${size / 2}" r="${r}" stroke="#e9edf2" stroke-width="${sw}" fill="none"/><circle cx="${size / 2}" cy="${size / 2}" r="${r}" stroke="${color}" stroke-width="${sw}" fill="none" stroke-linecap="round" stroke-dasharray="${(pct / 100) * c} ${c}" transform="rotate(-90 ${size / 2} ${size / 2})"/></svg>`;
+}
+function spark(points, w = 92, h = 34, color = '#0d9488') {
+  if (!points.length) points = [0, 0];
+  const mx = Math.max(...points, 1), mn = Math.min(...points, 0);
+  const px = i => (i / (points.length - 1)) * (w - 4) + 2;
+  const py = v => h - 3 - ((v - mn) / (mx - mn || 1)) * (h - 8);
+  const line = points.map((v, i) => `${i ? 'L' : 'M'}${px(i).toFixed(1)} ${py(v).toFixed(1)}`).join(' ');
+  return `<svg class="sparkline" width="${w}" height="${h}"><path d="${line} L${px(points.length - 1)} ${h} L${px(0)} ${h} Z" fill="${color}" opacity=".1"/><path d="${line}" fill="none" stroke="${color}" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
+}
+function hbars(items, colorFn) {
+  const mx = Math.max(...items.map(i => i.value), 1);
+  return items.map(it => {
+    const w = Math.max(6, (it.value / mx) * 100);
+    return `<div class="hbar-row">
+      <div style="font-weight:600;color:var(--ink2);white-space:nowrap;overflow:hidden;text-overflow:ellipsis" title="${esc(it.label)}">${esc(it.label)}</div>
+      <div class="hbar-track"><div class="hbar-fill" style="width:${w}%;background:${colorFn(it)}">${it.value}</div></div>
+      <div style="text-align:right;color:var(--mut);font-variant-numeric:tabular-nums">${it.suffix || ''}</div>
+    </div>`;
+  }).join('');
+}
+function lineChart(series, w = 560, h = 190, color = '#0d9488') {
+  const pad = { l: 34, r: 14, t: 14, b: 26 };
+  const mx = Math.max(...series.map(s => s.v), 1), mn = 0;
+  const px = i => pad.l + (i / (series.length - 1 || 1)) * (w - pad.l - pad.r);
+  const py = v => pad.t + (1 - (v - mn) / (mx - mn || 1)) * (h - pad.t - pad.b);
+  const line = series.map((s, i) => `${i ? 'L' : 'M'}${px(i).toFixed(1)} ${py(s.v).toFixed(1)}`).join(' ');
+  const grid = [0, .5, 1].map(f => {
+    const y = pad.t + f * (h - pad.t - pad.b), val = Math.round(mx - f * (mx - mn));
+    return `<line x1="${pad.l}" y1="${y}" x2="${w - pad.r}" y2="${y}" stroke="#eef1f6"/><text x="${pad.l - 7}" y="${y + 3.5}" text-anchor="end" font-size="9.5" fill="#a3adb8">${val}%</text>`;
+  }).join('');
+  const dots = series.map((s, i) => `<circle cx="${px(i)}" cy="${py(s.v)}" r="3.4" fill="#fff" stroke="${color}" stroke-width="2.2"/><text x="${px(i)}" y="${h - 8}" text-anchor="middle" font-size="9.5" fill="#a3adb8">${s.m}</text>`).join('');
+  const area = `${line} L${px(series.length - 1)} ${h - pad.b} L${px(0)} ${h - pad.b} Z`;
+  return `<svg width="100%" viewBox="0 0 ${w} ${h}"><path d="${area}" fill="${color}" opacity=".08"/><path d="${line}" fill="none" stroke="${color}" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/>${grid}${dots}</svg>`;
+}
+
+/* ---------------- notifications ---------------- */
+function notifs() {
+  const T = todayISO(), out = [];
+  db => null;
+  S.state.shipments.forEach(s => {
+    if (s.delayed && s.status !== 'Received')
+      out.push({ tone: 'red', icon: 'alert', t: `${s.id} delayed — ${delayLabel(s.delayReason)}`, s: `${s.supplier.name} → ${podName(s.pod)} · ETA ${fmtDate(s.eta)}`, go: 'shipments', ref: s.id });
+    if (!s.delayed && s.status !== 'Received' && diffDays(s.eta, T) >= 0 && diffDays(s.eta, T) <= 3 && docsReady(s) < 6)
+      out.push({ tone: 'amber', icon: 'doc', t: `${s.id} arrives soon — docs ${docsReady(s)}/6`, s: `${s.buyer} · ${s.commodity}`, go: 'shipments', ref: s.id });
+    const lastEta = (s.etaHistory || []).slice(-1)[0];
+    if (lastEta && lastEta.on >= T && !s.delayed === false) { /* noop guard */ }
+    if (lastEta && diffDays(T, lastEta.on) <= 2 && lastEta.on >= T)
+      out.push({ tone: 'violet', icon: 'clock', t: `ETA changed on ${s.id} → ${fmtDate(s.eta)}`, s: lastEta.note || 'Review impact on production plan', go: 'shipments', ref: s.id });
+  });
+  S.state.samples.forEach(s => {
+    const dd = diffDays(s.dueDate, T);
+    if (dd < 0 && !['Approved'].includes(s.status))
+      out.push({ tone: 'red', icon: 'shirt', t: `${s.id} overdue by ${-dd}d`, s: `${s.style} ${s.styleName} · ${s.buyer} · ${s.status}`, go: 'samples', ref: s.id });
+    else if (dd >= 0 && dd <= 2 && ['Requested', 'In Development'].includes(s.status))
+      out.push({ tone: 'amber', icon: 'shirt', t: `${s.id} due ${fmtDate(s.dueDate)}`, s: `${s.type} · ${s.buyer}`, go: 'samples', ref: s.id });
+  });
+  S.state.accessories.forEach(a => {
+    const dd = diffDays(a.requiredDate, T);
+    if (a.status === 'Shortage' || (a.received < a.ordered && dd < 0))
+      out.push({ tone: 'red', icon: 'tag', t: `${a.id} shortage — ${a.received < a.ordered ? num(a.ordered - a.received) + ' ' + a.unit + ' missing' : 'flagged'}`, s: `${a.item} · required ${fmtDate(a.requiredDate)}`, go: 'accessories', ref: a.id });
+    else if (a.received < a.ordered && dd <= 3 && dd >= 0)
+      out.push({ tone: 'amber', icon: 'tag', t: `${a.id} needed in ${dd}d`, s: `${a.item} · ${a.status}`, go: 'accessories', ref: a.id });
+  });
+  const order = { red: 0, amber: 1, violet: 2 };
+  return out.sort((a, b) => order[a.tone] - order[b.tone]).slice(0, 14);
+}
+
+/* ---------------- toast ---------------- */
+function toast(msg, tone = 'ok') {
+  const el = document.createElement('div');
+  el.className = `toast ${tone}`;
+  el.innerHTML = `<span class="t-ic">${icon(tone === 'ok' ? 'check' : 'alert', 16)}</span><span>${esc(msg)}</span>`;
+  $('#toasts').appendChild(el);
+  setTimeout(() => { el.style.transition = '.3s'; el.style.opacity = '0'; el.style.transform = 'translateY(6px)'; setTimeout(() => el.remove(), 300); }, 3400);
+}
+
+/* ---------------- modal ---------------- */
+function openModal(html, cls) { $('#modal-root').innerHTML = `<div class="ovl" data-ovl="1"><div class="modal ${cls || ''}">${html}</div></div>`; document.body.classList.add('locked'); }
+function closeModal() { $('#modal-root').innerHTML = ''; document.body.classList.remove('locked'); S.modal = null; }
+
+/* ---------------- shell ---------------- */
+const NAV = [
+  { sec: 'Operations' },
+  { id: 'dashboard', label: 'Dashboard', icon: 'grid' },
+  { id: 'imports', label: 'Import Timeline', icon: 'box', badge: () => S.state.shipments.filter(s => s.delayed && s.status !== 'Received').length + S.state.accessories.filter(a => a.status === 'Shortage' || (a.received < a.ordered && diffDays(a.requiredDate, todayISO()) < 0)).length },
+  { id: 'shipments', label: 'Imports & Shipments', icon: 'ship', badge: () => S.state.shipments.filter(s => s.delayed && s.status !== 'Received').length },
+  { id: 'samples', label: 'Sample Tracker', icon: 'shirt', badge: () => S.state.samples.filter(s => diffDays(s.dueDate, todayISO()) < 0 && s.status !== 'Approved').length },
+  { id: 'accessories', label: 'Accessories & Trims', icon: 'tag', badge: () => S.state.accessories.filter(a => a.status === 'Shortage').length },
+  { sec: 'Insight' },
+  { id: 'analytics', label: 'Delay Analytics', icon: 'bar' },
+  { id: 'activity', label: 'Activity Feed', icon: 'pulse' }
+];
+const TITLES = {
+  dashboard: ['Control Tower', 'FlexKnit Factories · Antananarivo — live import & sample visibility'],
+  imports: ['Import Timeline — Yarn & Accessories', 'Everything inbound, in one merchandising view — kept live by the shipping desk'],
+  shipments: ['Imports & Shipments', 'Yarn, trims & accessories inbound via Toamasina and Ivato'],
+  samples: ['Sample Tracker', 'Proto · Fit · PP · TOP pipeline between merchandising and buyers'],
+  accessories: ['Accessories & Trims', 'Trims PO coverage against knitting & finishing plan'],
+  analytics: ['Delay Analytics', 'Root causes, carrier performance and on-time trend'],
+  activity: ['Activity Feed', 'Everything logistics and merchandising touched, in one stream']
+};
+
+function renderLogin() { $('#root').innerHTML = viewLogin(); }
+function renderShell() {
+  const u = S.user;
+  $('#root').innerHTML = `
+  <div class="shell">
+    <aside class="side">
+      <div class="side-logo">
+        <span class="logo-mark">${icon('knit', 24)}</span>
+        <span class="t"><b>FLEXKNIT <span style="color:#2dd4bf">LINK</span></b><span>Logistics × Merch Ops</span></span>
+      </div>
+      <nav class="side-nav">
+        ${NAV.map(n => n.sec
+          ? `<div class="nav-sec">${n.sec}</div>`
+          : `<button class="nav-it ${S.route === n.id ? 'on' : ''}" data-action="nav" data-nav="${n.id}">${icon(n.icon)}<span class="nl">${n.label}</span><span class="nv-badge" data-navbadge="${n.id}" style="display:none"></span></button>`
+        ).join('')}
+      </nav>
+      <div class="side-foot">
+        <button class="who" data-action="logout" title="Switch user">
+          ${avatar(u)}<span><span class="wn">${esc(u.name)}</span><span class="wr">${u.role}</span></span>
+          <span class="out">${icon('out', 16)}</span>
+        </button>
+      </div>
+    </aside>
+    <div class="main">
+      <header class="topbar">
+        <div class="tb-title"><h1 id="tb-h"></h1><p id="tb-p"></p></div>
+        <div class="tb-right">
+          <label class="gsearch">${icon('search', 15)}<input id="gq" placeholder="Search PO, shipment, style…" data-input="gq"></label>
+          <span class="demo-chip">DEMO DATA</span>
+          <div style="position:relative">
+            <button class="icon-btn" data-action="notifs">${icon('bell')}<span class="nb" id="notif-n" style="display:none"></span></button>
+            <div id="notif-pop"></div>
+          </div>
+          <button class="btn btn-primary btn-sm" data-action="quick-add">${icon('plus', 15)} New</button>
+        </div>
+      </header>
+      <section class="view" id="view"></section>
+    </div>
+  </div>`;
+  updateBadges(); renderView();
+}
+function updateBadges() {
+  if (!S.user) return;
+  NAV.forEach(n => { if (!n.badge) return; const el = $(`[data-navbadge="${n.id}"]`); if (!el) return; const v = n.badge(); el.style.display = v ? '' : 'none'; el.textContent = v; });
+  const ns = notifs().length, nb = $('#notif-n');
+  if (nb) { nb.style.display = ns ? '' : 'none'; nb.textContent = ns > 9 ? '9+' : ns; }
+}
+function renderView() {
+  if (!S.user) return renderLogin();
+  const [h, p] = TITLES[S.route] || TITLES.dashboard;
+  const th = $('#tb-h'), tp = $('#tb-p');
+  if (th) { th.textContent = h; tp.textContent = p; }
+  $$('.nav-it').forEach(el => el.classList.toggle('on', el.dataset.nav === S.route));
+  const V = { dashboard: viewDashboard, imports: viewImports, shipments: viewShipments, samples: viewSamples, accessories: viewAccessories, analytics: viewAnalytics, activity: viewActivity };
+  $('#view').innerHTML = (V[S.route] || viewDashboard)();
+  updateBadges();
+}
+function setRoute(r) { S.route = r; S.q = ''; const g = $('#gq'); if (g) g.value = ''; renderView(); }
+
+/* ---------------- events ---------------- */
+document.addEventListener('click', e => {
+  const ov = e.target.closest('[data-ovl]');
+  if (ov && e.target === ov) return closeModal();
+  const el = e.target.closest('[data-action]');
+  if (!el) { if (S.notifOpen && !e.target.closest('#notif-pop') && !e.target.closest('[data-action="notifs"]')) { S.notifOpen = false; $('#notif-pop').innerHTML = ''; } return; }
+  const act = el.dataset.action, id = el.dataset.id;
+  const A = {
+    'nav': () => setRoute(el.dataset.nav),
+    'login': () => { S.user = S.state.users.find(u => u.id === el.dataset.id); lsSet('fk-user', S.user.id); renderShell(); toast(`Welcome, ${S.user.name.split(' ')[0]} — signed in as ${S.user.role}`); },
+    'logout': () => { S.user = null; lsDel('fk-user'); renderLogin(); },
+    'notifs': () => { S.notifOpen = !S.notifOpen; $('#notif-pop').innerHTML = S.notifOpen ? notifPopHtml() : ''; },
+    'notif-go': () => {
+      S.notifOpen = false; $('#notif-pop').innerHTML = '';
+      const go = el.dataset.go, ref = el.dataset.ref;
+      setRoute(go);
+      if (ref) setTimeout(() => { if (go === 'shipments') openShipModal(ref); else if (go === 'samples') openSampleModal(ref); else if (go === 'accessories') openAccModal(ref); }, 40);
+    },
+    'close': () => closeModal(),
+    'quick-add': () => { S.route === 'samples' ? openSampleForm() : S.route === 'accessories' ? openAccForm() : openShipmentForm(); },
+    'new-shipment': () => openShipmentForm(),
+    'new-sample': () => openSampleForm(),
+    'new-acc': () => openAccForm(),
+    'export': () => downloadCSV(el.dataset.module),
+    'reset-demo': async () => { await api('/api/reset', { method: 'POST' }); toast('Demo data reset'); closeModal(); await refresh(); },
+    'open-ship': () => openShipModal(id),
+    'open-sample': () => openSampleModal(id),
+    'open-acc': () => openAccModal(id),
+    'ship-tab': () => { S.shipTab = el.dataset.tab; renderView(); const m = $('#ship-modal'); if (m) openShipModal(m.dataset.id); },
+    'eta-form': () => openEtaForm(id),
+    'delay-form': () => openDelayForm(id),
+    'receive': async () => {
+      await api(`/api/shipments/${id}`, { method: 'PATCH', body: JSON.stringify({ userId: S.user.id, patch: { status: 'Received', ata: todayISO(), delayed: false, progress: 100 } }) });
+      toast('Shipment marked as received'); await refresh(); openShipModal(id);
+    },
+    'toggle-doc': async () => {
+      if (!can()) return toast('Only logistics users can edit document status', 'err');
+      await api(`/api/shipments/${el.dataset.ship}`, { method: 'PATCH', body: JSON.stringify({ userId: S.user.id, patch: { docs: { [el.dataset.doc]: el.dataset.on !== '1' } } }) });
+      await refresh(); openShipModal(el.dataset.ship);
+    },
+    'move-sample': async () => {
+      const to = el.dataset.to, s = S.state.samples.find(x => x.id === id);
+      if (to === 'Courier Out') return openCourierForm(id);
+      await api(`/api/samples/${id}`, { method: 'PATCH', body: JSON.stringify({ userId: S.user.id, patch: { status: to } }) });
+      toast(`${s.id} → ${to}`); await refresh(); openSampleModal(id);
+    },
+    'reset-filters': () => { S.f = {}; S.q = ''; const g = $('#gq'); if (g) g.value = ''; renderView(); },
+    'buyer-filter': () => { S.f.impBuyer = el.dataset.buyer; setRoute('imports'); }
+  };
+  if (A[act]) A[act]();
+});
+
+document.addEventListener('submit', async e => {
+  const f = e.target.closest('form[data-form]');
+  if (!f) return;
+  e.preventDefault();
+  const kind = f.dataset.form, fd = Object.fromEntries(new FormData(f).entries());
+  const uid = S.user.id;
+  try {
+    if (kind === 'comment-ship') {
+      await api(`/api/shipments/${fd.id}/comments`, { method: 'POST', body: JSON.stringify({ userId: uid, text: fd.text }) });
+      await refresh(); openShipModal(fd.id);
+      return;
+    }
+    if (kind === 'comment-sample') {
+      await api(`/api/samples/${fd.id}/comments`, { method: 'POST', body: JSON.stringify({ userId: uid, text: fd.text }) });
+      await refresh(); openSampleModal(fd.id);
+      return;
+    }
+    if (kind === 'eta') {
+      await api(`/api/shipments/${fd.id}`, { method: 'PATCH', body: JSON.stringify({ userId: uid, patch: { eta: fd.eta }, note: fd.note }) });
+      toast(`ETA updated → ${fmtDate(fd.eta)}`); closeModal(); await refresh(); openShipModal(fd.id);
+      return;
+    }
+    if (kind === 'delay') {
+      const patch = { delayed: fd.delayed === '1', delayReason: fd.delayed === '1' ? fd.reason : null, delayNote: fd.delayed === '1' ? fd.note : '' };
+      if (fd.revisedEta) patch.eta = fd.revisedEta;
+      await api(`/api/shipments/${fd.id}`, { method: 'PATCH', body: JSON.stringify({ userId: uid, patch }) });
+      toast(patch.delayed ? 'Delay logged — merchandising notified' : 'Delay cleared'); closeModal(); await refresh(); openShipModal(fd.id);
+      return;
+    }
+    if (kind === 'new-shipment') {
+      await api('/api/shipments', { method: 'POST', body: JSON.stringify({ userId: uid, data: fd }) });
+      toast('Shipment created'); closeModal(); setRoute('shipments'); await refresh();
+      return;
+    }
+    if (kind === 'new-sample') {
+      await api('/api/samples', { method: 'POST', body: JSON.stringify({ userId: uid, data: fd }) });
+      toast('Sample request raised — logistics notified'); closeModal(); setRoute('samples'); await refresh();
+      return;
+    }
+    if (kind === 'courier') {
+      await api(`/api/samples/${fd.id}`, { method: 'PATCH', body: JSON.stringify({ userId: uid, patch: { status: 'Courier Out', courier: fd.courier, tracking: fd.tracking } }) });
+      toast('Courier booked — buyer dispatch updated'); closeModal(); await refresh(); openSampleModal(fd.id);
+      return;
+    }
+    if (kind === 'new-acc') {
+      await api('/api/accessories', { method: 'POST', body: JSON.stringify({ userId: uid, data: fd }) });
+      toast('Trims PO created'); closeModal(); setRoute('accessories'); await refresh();
+      return;
+    }
+    if (kind === 'acc-receive') {
+      await api(`/api/accessories/${fd.id}`, { method: 'PATCH', body: JSON.stringify({ userId: uid, patch: { received: +fd.received, status: fd.status } }) });
+      toast('Receipt updated'); closeModal(); await refresh(); openAccModal(fd.id);
+      return;
+    }
+  } catch (err) { toast(err.message || 'Something went wrong', 'err'); }
+});
+
+document.addEventListener('input', e => {
+  if (e.target.matches('[data-input="gq"]')) {
+    S.q = e.target.value.toLowerCase();
+    const V = { shipments: viewShipments, samples: viewSamples, accessories: viewAccessories, imports: viewImports };
+    if (V[S.route]) {
+      const inView = !!e.target.closest('#view');
+      $('#view').innerHTML = V[S.route]();
+      const again = $('#view input[data-input="gq"]');
+      const top = $('#gq');
+      if (top && again) top.value = again.value = S.q;
+      if (inView && again) { again.focus(); again.setSelectionRange(again.value.length, again.value.length); }
+    }
+  }
+});
+document.addEventListener('change', e => {
+  const el = e.target.closest('[data-filter]');
+  if (el) { S.f[el.dataset.filter] = el.value; const V = { shipments: viewShipments, samples: viewSamples, accessories: viewAccessories, analytics: viewAnalytics, imports: viewImports }; if (V[S.route]) $('#view').innerHTML = V[S.route](); return; }
+  const st = e.target.closest('[data-status-of]');
+  if (st) {
+    (async () => {
+      try {
+        const what = st.dataset.statusWhat;
+        if (what === 'ship') { await api(`/api/shipments/${st.dataset.statusOf}`, { method: 'PATCH', body: JSON.stringify({ userId: S.user.id, patch: { status: st.value } }) }); toast('Status updated'); await refresh(); openShipModal(st.dataset.statusOf); }
+        if (what === 'acc') { await api(`/api/accessories/${st.dataset.statusOf}`, { method: 'PATCH', body: JSON.stringify({ userId: S.user.id, patch: { status: st.value } }) }); toast('Status updated'); await refresh(); openAccModal(st.dataset.statusOf); }
+      } catch (err) { toast(err.message, 'err'); }
+    })();
+  }
+});
+
+window.addEventListener('hashchange', () => { const r = location.hash.replace('#/', ''); if (r && r !== S.route) setRoute(r); });
+
+/* ---------------- boot ---------------- */
+function boot() {
+  (async () => {
+    try {
+      S.state = loadState();
+      const saved = lsGet('fk-user');
+      S.user = S.state.users.find(u => u.id === saved) || null;
+      S.user ? renderShell() : renderLogin();
+    } catch (err) {
+      $('#root').innerHTML = `<div style="padding:60px;text-align:center;color:#75808e">Failed to start FlexKnit Link.<br><br><code>${esc(err.message)}</code></div>`;
+    }
+  })();
+}
+if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', boot);
+else boot();
+
+</script>
+</body>
+</html>
