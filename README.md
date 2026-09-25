@@ -18,11 +18,25 @@ Internal SaaS platform for **FlexKnit Factories** (Antananarivo, Madagascar) tha
 | **Delay Analytics** | Root-cause Pareto, days lost, on-time trend by month, buyer filter | Evidence for promising delivery dates to buyers |
 | **Activity feed & notifications** | Every ETA change, delay, status move, receipt and comment is logged | A bell with everything that needs attention, per role |
 
-## Roles (demo sign-in)
+## Sign-in & roles
 
+Every account signs in with a password (**default `flex2026`** — shown on the login screen; change it after first sign-in). Sessions persist on the device; passwords are stored as SHA-256 hashes.
+
+- **Super Admin** — Jeroen Stuurop (Flex Sales Dept): everything below **plus** user management (add users, set any user's password) and data administration (JSON backup export/import, clear demo data, load demo data).
 - **Logistics** — Hery (lead), Miora (imports), Naina (customs & docs): create shipments, update ETA (logged in ETA history), report/clear delays with reason codes, tick document checklists, book sample couriers, record trims receipts.
 - **Merchandising** — Lova, Tojo, Faniry: full read access, comment/ask on any shipment or sample, raise sample requests, track everything affecting the production plan.
-- **Management** — Rado: everything logistics can do.
+- **Management** — Rado: everything logistics can do, plus data administration.
+
+Buyers and suppliers are **free-text with autocomplete** — type your own buyers/suppliers in any form; filters and dashboards pick them up automatically.
+
+## Your own test data (vs demo)
+
+Menu (avatar, bottom-left) → **Data: backup, import & demo**:
+
+- **Export JSON backup** — full workspace in one file
+- **Import JSON backup** — restore from a backup file
+- **Clear demo data — use my own test data** — empties shipments/samples/trims (accounts stay) and switches the workspace to *custom mode*: your entries are kept permanently, never overwritten by the daily demo refresh (single-file build)
+- **Load demo data** — bring the full demo back any time
 
 ## Run it
 
@@ -58,7 +72,10 @@ flexknit-link/
 | `POST /api/{shipments\|samples}/:id/comments` | Threaded discussion |
 | `POST /api/samples` · `PATCH /api/samples/:id` | Sample request / status & courier updates |
 | `POST /api/accessories` · `PATCH /api/accessories/:id` | Trims PO create / receipts |
-| `GET /api/export?module=…` | CSV export (shipments, samples, accessories) |
+| `GET /api/export?module=…` | CSV export (shipments, samples, accessories) · `module=json` → full backup |
+| `POST /api/login` | Verify id + SHA-256 password hash |
+| `POST /api/users` · `POST /api/users/:id/pass` | Add user / set password (Super Admin; self for own password) |
+| `POST /api/clear` · `POST /api/import` | Empty workspace / restore backup (Super Admin, Management) |
 | `POST /api/reset` | Re-seed demo data |
 
 ## Next steps beyond the demo

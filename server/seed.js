@@ -8,14 +8,14 @@ const ts = (h) => new Date(Date.now() - h * 36e5).toISOString();
 
 function build() {
   const users = [
-    { id: 'u1', name: 'Hery Randria',   role: 'logistics',     title: 'Logistics Lead',            color: '#0d9488' },
-    { id: 'u2', name: 'Miora Rakoto',   role: 'logistics',     title: 'Import Coordinator',        color: '#0284c7' },
-    { id: 'u3', name: 'Naina Andriama', role: 'logistics',     title: 'Customs & Documentation',   color: '#d97706' },
-    { id: 'u4', name: 'Lova Rasoa',     role: 'merchandising', title: 'Merch Manager — EU/UK',     color: '#7c3aed' },
-    { id: 'u5', name: 'Tojo Rajaon',    role: 'merchandising', title: 'Merchandiser — US',         color: '#db2777' },
-    { id: 'u6', name: 'Faniry Rasolo',  role: 'merchandising', title: 'Merchandiser — Knitwear',   color: '#4f46e5' },
-    { id: 'u7', name: 'Rado Rakotobe',  role: 'admin',         title: 'Operations Director',       color: '#475569' },
-    { id: 'u8', name: 'Jeroen Stuurop', role: 'superadmin',    title: 'Super Admin · Flex Sales Dept', color: '#c2410c' }
+    { id: 'u1', name: 'Hery Randria',   role: 'logistics',     title: 'Logistics Lead',            color: '#0d9488', passHash: '11d3bf68eeac637c516d4f7eda95442f327ec53d316fedad315877f8b0e57c04' },
+    { id: 'u2', name: 'Miora Rakoto',   role: 'logistics',     title: 'Import Coordinator',        color: '#0284c7', passHash: '11d3bf68eeac637c516d4f7eda95442f327ec53d316fedad315877f8b0e57c04' },
+    { id: 'u3', name: 'Naina Andriama', role: 'logistics',     title: 'Customs & Documentation',   color: '#d97706', passHash: '11d3bf68eeac637c516d4f7eda95442f327ec53d316fedad315877f8b0e57c04' },
+    { id: 'u4', name: 'Lova Rasoa',     role: 'merchandising', title: 'Merch Manager — EU/UK',     color: '#7c3aed', passHash: '11d3bf68eeac637c516d4f7eda95442f327ec53d316fedad315877f8b0e57c04' },
+    { id: 'u5', name: 'Tojo Rajaon',    role: 'merchandising', title: 'Merchandiser — US',         color: '#db2777', passHash: '11d3bf68eeac637c516d4f7eda95442f327ec53d316fedad315877f8b0e57c04' },
+    { id: 'u6', name: 'Faniry Rasolo',  role: 'merchandising', title: 'Merchandiser — Knitwear',   color: '#4f46e5', passHash: '11d3bf68eeac637c516d4f7eda95442f327ec53d316fedad315877f8b0e57c04' },
+    { id: 'u7', name: 'Rado Rakotobe',  role: 'admin',         title: 'Operations Director',       color: '#475569', passHash: '11d3bf68eeac637c516d4f7eda95442f327ec53d316fedad315877f8b0e57c04' },
+    { id: 'u8', name: 'Jeroen Stuurop', role: 'superadmin',    title: 'Super Admin · Flex Sales Dept', color: '#c2410c', passHash: '11d3bf68eeac637c516d4f7eda95442f327ec53d316fedad315877f8b0e57c04' }
   ];
 
   const catalog = {
@@ -267,7 +267,7 @@ function build() {
   return {
     meta: {
       company: 'FlexKnit Factories', app: 'FlexKnit Link', tagline: 'Logistics × Merchandising Control Tower',
-      site: 'Antananarivo · Madagascar', hub: 'Toamasina Port', seededAt: new Date().toISOString()
+      site: 'Antananarivo · Madagascar', hub: 'Toamasina Port', mode: 'demo', seededAt: new Date().toISOString()
     },
     users, catalog, shipments, samples, accessories, activity
   };

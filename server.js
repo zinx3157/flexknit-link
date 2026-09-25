@@ -30,6 +30,14 @@ function body(req) {
   });
 }
 function userName(id) { const u = db.users.find(v => v.id === id); return u ? u.name : (id || 'System'); }
+function validateState(s) {
+  if (!s || typeof s !== 'object') return 'Invalid file: not a FlexKnit Link backup.';
+  if (!Array.isArray(s.users) || !s.users.length) return 'Invalid backup: users missing.';
+  if (!Array.isArray(s.shipments) || !Array.isArray(s.samples) || !Array.isArray(s.accessories)) return 'Invalid backup: shipments/samples/accessories lists missing.';
+  if (!s.catalog || typeof s.catalog !== 'object') return 'Invalid backup: catalog missing.';
+  if (JSON.stringify(s).length > 4e6) return 'Backup too large (max ~4 MB).';
+  return null;
+}
 function log(module, refId, action, detail, userId) {
   db.activity.unshift({ id: 'a' + Date.now() + Math.random().toString(36).slice(2, 6), ts: new Date().toISOString(), userId: userId || null, module, refId, action, detail: detail || '' });
   if (db.activity.length > 400) db.activity = db.activity.slice(0, 400);
@@ -127,7 +135,77 @@ const server = http.createServer(async (req, res) => {
       /* ---- state ---- */
       if (req.method === 'GET' && p === '/api/state') return json(res, 200, db);
 
-      if (req.method === 'POST' && p === '/api/reset') { db = seed.build(); persist(); return json(res, 200, { ok: true }); }
+      const actorCan = (userId, roles) => { const u = db.users.find(x => x.id === userId); return u && roles.includes(u.role); };
+
+      if (req.method === 'POST' && p === '/api/reset') {
+        return body(req).then(({ userId }) => {
+          if (!actorCan(userId, ['superadmin', 'admin', 'logistics'])) return json(res, 403, { error: 'Not allowed.' });
+          db = seed.build(); db.meta.mode = 'demo'; persist();
+          return json(res, 200, { ok: true, mode: 'demo' });
+        }).catch(e => json(res, 400, { error: String(e.message || e) }));
+      }
+
+      /* ---- auth ---- */
+      if (req.method === 'POST' && p === '/api/login') {
+        return body(req).then(({ id, passHash }) => {
+          const u = db.users.find(x => x.id === id);
+          if (!u || !passHash || u.passHash !== passHash) return json(res, 401, { error: 'Wrong password for this account.' });
+          json(res, 200, { ok: true, user: u });
+        }).catch(e => json(res, 400, { error: String(e.message || e) }));
+      }
+
+      /* ---- user management (Super Admin) ---- */
+      if (req.method === 'POST' && p === '/api/users') {
+        return body(req).then(({ userId, user: nu }) => {
+          if (!actorCan(userId, ['superadmin'])) return json(res, 403, { error: 'Only the Super Admin can add users.' });
+          if (!nu || !nu.name || !nu.role) return json(res, 400, { error: 'Name and role are required.' });
+          if (db.users.some(x => x.name.toLowerCase() === String(nu.name).toLowerCase())) return json(res, 400, { error: 'A user with this name already exists.' });
+          const palette = ['#0d9488', '#0284c7', '#d97706', '#7c3aed', '#db2777', '#4f46e5', '#c2410c', '#15803d', '#be185d', '#475569'];
+          const item = {
+            id: 'u' + (Math.max(0, ...db.users.map(x => +String(x.id).replace(/\D/g, '') || 0)) + 1),
+            name: String(nu.name).slice(0, 60), role: nu.role, title: String(nu.title || '').slice(0, 80),
+            color: palette[Math.floor(Math.random() * palette.length)],
+            passHash: nu.passHash || '11d3bf68eeac637c516d4f7eda95442f327ec53d316fedad315877f8b0e57c04'
+          };
+          db.users.push(item);
+          log('system', item.id, 'User added', `${item.name} — ${item.role}`, userId);
+          persist(); return json(res, 200, { user: item });
+        }).catch(e => json(res, 400, { error: String(e.message || e) }));
+      }
+      const um = p.match(/^\/api\/users\/([^/]+)\/pass$/);
+      if (um && req.method === 'POST') {
+        return body(req).then(({ userId, passHash }) => {
+          const target = db.users.find(x => x.id === decodeURIComponent(um[1]));
+          if (!target) return json(res, 404, { error: 'user not found' });
+          if (userId !== target.id && !actorCan(userId, ['superadmin'])) return json(res, 403, { error: 'Not allowed.' });
+          if (!passHash || String(passHash).length !== 64) return json(res, 400, { error: 'Invalid password hash.' });
+          target.passHash = passHash;
+          log('system', target.id, 'Password changed', `Password updated for ${target.name}`, userId);
+          persist(); return json(res, 200, { ok: true });
+        }).catch(e => json(res, 400, { error: String(e.message || e) }));
+      }
+
+      /* ---- data: clear to own workspace / import ---- */
+      if (req.method === 'POST' && p === '/api/clear') {
+        return body(req).then(({ userId }) => {
+          if (!actorCan(userId, ['superadmin', 'admin'])) return json(res, 403, { error: 'Only the Super Admin or Management can clear the workspace.' });
+          db.shipments = []; db.samples = []; db.accessories = []; db.activity = [];
+          log('system', 'workspace', 'Workspace cleared', 'Demo data removed — ready for your own test data.', userId);
+          db.meta.mode = 'custom'; db.meta.clearedAt = new Date().toISOString();
+          persist(); return json(res, 200, { ok: true, mode: 'custom' });
+        }).catch(e => json(res, 400, { error: String(e.message || e) }));
+      }
+      if (req.method === 'POST' && p === '/api/import') {
+        return body(req).then(({ userId, state }) => {
+          if (!actorCan(userId, ['superadmin', 'admin'])) return json(res, 403, { error: 'Only the Super Admin or Management can import data.' });
+          const err = validateState(state);
+          if (err) return json(res, 400, { error: err });
+          state.meta = state.meta || {};
+          state.meta.mode = 'custom';
+          state.meta.importedAt = new Date().toISOString();
+          db = state; persist(); return json(res, 200, { ok: true, mode: 'custom' });
+        }).catch(e => json(res, 400, { error: String(e.message || e) }));
+      }
 
       /* ---- shipments ---- */
       let m;
@@ -195,6 +273,14 @@ const server = http.createServer(async (req, res) => {
       /* ---- export ---- */
       if (p === '/api/export' && req.method === 'GET') {
         const mod = u.searchParams.get('module') || 'shipments';
+        if (mod === 'json') {
+          res.writeHead(200, {
+            'Content-Type': 'application/json; charset=utf-8',
+            'Content-Disposition': `attachment; filename="flexknit-backup-${today()}.json"`,
+            'Cache-Control': 'no-store'
+          });
+          return res.end(JSON.stringify(db, null, 2));
+        }
         const gen = CSV[mod]; if (!gen) return json(res, 400, { error: 'unknown module' });
         const { head, row } = gen();
         const esc = v => { v = String(v ?? ''); return /[",\n]/.test(v) ? '"' + v.replace(/"/g, '""') + '"' : v; };

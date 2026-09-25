@@ -360,3 +360,14 @@ th.num{text-align:right}
   .facts{grid-template-columns:1fr}
   .gsearch{display:none}
 }
+
+/* ============================ AUTH & MENUS ============================ */
+.user-pick.picked{border-color:var(--accent);background:#f0fbfa;box-shadow:0 0 0 3px rgba(13,148,136,.12)}
+.login-pass{margin-top:14px;background:#f6f8fb;border:1px solid var(--border2);border-radius:12px;padding:14px;display:flex;flex-direction:column;gap:8px;animation:pop .15s ease}
+.login-err{color:var(--red-ink);background:var(--red-bg);border:1px solid #f5caca;border-radius:8px;padding:7px 11px;font-size:12.5px;font-weight:600;display:flex;gap:7px;align-items:center}
+.menu-row{display:flex;align-items:center;gap:12px;padding:12px 14px;border:1.5px solid var(--border);border-radius:11px;background:#fff;text-align:left;transition:.13s;width:100%;color:var(--ink)}
+.menu-row:hover{border-color:var(--accent);background:#f6fdfc;transform:translateY(-1px);box-shadow:var(--shadow)}
+.menu-row b{font-size:13.5px}
+.menu-row svg{flex:none;color:var(--accent)}
+.menu-row span{min-width:0;flex:1}
+.menu-row:hover svg{color:var(--accent-ink)}

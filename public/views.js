@@ -35,18 +35,43 @@ function viewLogin() {
       ${groups.map(g => `
         <div class="team-head"><span class="dot" style="background:${g.color}"></span>${g.label}</div>
         ${S.state.users.filter(u => u.role === g.key).map(u => `
-          <button class="user-pick" data-action="login" data-id="${u.id}">
+          <button class="user-pick ${S.loginUser === u.id ? 'picked' : ''}" data-action="pick-user" data-id="${u.id}">
             ${avatar(u)}
             <span><span class="up-name">${esc(u.name)}</span><br><span class="up-title">${esc(u.title)}</span></span>
-            <span class="up-go">${icon('arrow', 16)}</span>
+            <span class="up-go">${icon(S.loginUser === u.id ? 'check' : 'arrow', 16)}</span>
           </button>`).join('')}
       `).join('')}
-      <div class="login-note"><b>Roles:</b> the Super Admin sees and does everything. Logistics updates ETAs, logs delays, ticks documents and books couriers. Merchandising comments, raises sample requests and tracks anything affecting the production plan.</div>
+      ${S.loginUser ? (() => {
+        const su = S.state.users.find(x => x.id === S.loginUser);
+        return `<form data-form="login" class="login-pass">
+          <input type="hidden" name="uid" value="${su.id}">
+          <label class="fld"><label>Password for <b>${esc(su.name)}</b></label>
+          <input type="password" id="login-pass" name="pass" required placeholder="Enter password" autocomplete="current-password"></label>
+          ${S.loginErr ? `<div class="login-err">${icon('alert', 14)} ${esc(S.loginErr)}</div>` : ''}
+          <button class="btn btn-primary" style="width:100%;justify-content:center;margin-top:4px">Sign in ${icon('arrow', 15)}</button>
+        </form>`;
+      })() : ''}
+      <div class="login-note"><b>Demo password for every account:</b> <code style="background:#fff;border:1px solid var(--border);padding:1px 7px;border-radius:6px;font-weight:700">flex2026</code> — the Super Admin can set real passwords per user (menu → <b>Users &amp; passwords</b>) and every user can change their own (avatar menu → <b>Change my password</b>).<br><br>
+      <b>Roles:</b> the Super Admin sees and does everything. Logistics updates ETAs, logs delays, ticks documents and books couriers. Merchandising comments, raises sample requests and tracks anything affecting the production plan.</div>
     </div></div>
   </div>`;
 }
 
 /* ============================ SHARED BITS ============================ */
+function buyerList() {
+  const set = new Set(catalog().buyers);
+  S.state.shipments.forEach(s => set.add(s.buyer));
+  S.state.samples.forEach(s => set.add(s.buyer));
+  return [...set].sort();
+}
+function supplierList() {
+  const set = new Set();
+  catalog().suppliers.forEach(s => set.add(s.name));
+  S.state.shipments.forEach(s => set.add(s.supplier.name));
+  S.state.accessories.forEach(a => set.add(a.supplier));
+  return [...set].sort();
+}
+
 function routeViz(s) {
   const modeIc = s.mode === 'Air' ? icon('plane', 15) : icon('anchor', 15);
   return `<div class="routeviz">
@@ -63,7 +88,7 @@ function shipmentFiltersHtml() {
   return `
     <label class="tsearch">${icon('search', 14)}<input placeholder="Search shipment, PO, supplier…" value="${esc(S.q)}" data-input="gq"></label>
     <select class="tsel" data-filter="shipStatus">${opt('All', 'All statuses', !f.shipStatus || f.shipStatus === 'All')}${c.shipmentStatuses.map(s => opt(s, s, f.shipStatus === s)).join('')}</select>
-    <select class="tsel" data-filter="buyer">${opt('All', 'All buyers', !f.buyer || f.buyer === 'All')}${c.buyers.map(b => opt(b, b, f.buyer === b)).join('')}</select>
+    <select class="tsel" data-filter="buyer">${opt('All', 'All buyers', !f.buyer || f.buyer === 'All')}${buyerList().map(b => opt(b, b, f.buyer === b)).join('')}</select>
     <select class="tsel" data-filter="mode">${opt('All', 'Sea + Air', !f.mode || f.mode === 'All')}${opt('Sea', 'Sea', f.mode === 'Sea')}${opt('Air', 'Air', f.mode === 'Air')}</select>
     <select class="tsel" data-filter="flag">${opt('all', 'All shipments', !f.flag || f.flag === 'all')}${opt('delayed', 'Delayed only', f.flag === 'delayed')}${opt('watch', 'ETA ≤ 7 days', f.flag === 'watch')}</select>`;
 }
@@ -403,10 +428,10 @@ function openShipmentForm() {
     <form data-form="new-shipment" class="m-b frm">
       <div class="frow">
         <div class="fld"><label>PO number <span class="req">*</span></label><input name="po" required placeholder="PO-26xxx"></div>
-        <div class="fld"><label>Buyer <span class="req">*</span></label><select name="buyer" required>${c.buyers.map(b => `<option>${b}</option>`).join('')}</select></div>
+        <div class="fld"><label>Buyer <span class="req">*</span></label><input name="buyer" list="dl-buyers" required placeholder="Type or pick a buyer"><datalist id="dl-buyers">${buyerList().map(b => `<option value="${esc(b)}">`).join('')}</datalist></div>
       </div>
       <div class="frow">
-        <div class="fld"><label>Supplier <span class="req">*</span></label><select name="supplier" required>${c.suppliers.map(s => `<option>${esc(s.name)} — ${esc(s.city)}</option>`).join('')}</select></div>
+        <div class="fld"><label>Supplier <span class="req">*</span></label><input name="supplier" list="dl-suppliers" required placeholder="Type or pick a supplier"><datalist id="dl-suppliers">${supplierList().map(s => `<option value="${esc(s)}">`).join('')}</datalist></div>
         <div class="fld"><label>Commodity <span class="req">*</span></label><input name="commodity" required placeholder="e.g. Cashmere 2/26 · camel"></div>
       </div>
       <div class="frow frow">
@@ -444,7 +469,7 @@ function viewSamples() {
   return `
   <div class="toolbar">
     <label class="tsearch">${icon('search', 14)}<input placeholder="Search style, buyer, tracking…" value="${esc(S.q)}" data-input="gq"></label>
-    <select class="tsel" data-filter="buyer"><option value="All">All buyers</option>${catalog().buyers.map(b => `<option${S.f.buyer === b ? ' selected' : ''}>${b}</option>`).join('')}</select>
+    <select class="tsel" data-filter="buyer"><option value="All">All buyers</option>${buyerList().map(b => `<option${S.f.buyer === b ? ' selected' : ''}>${b}</option>`).join('')}</select>
     <button class="btn btn-primary" data-action="new-sample">${icon('plus', 15)} Request sample</button>
     <button class="btn btn-ghost" data-action="export" data-module="samples">${icon('download', 15)} CSV</button>
     <span class="count">${list.length} sample${list.length === 1 ? '' : 's'} in pipeline</span>
@@ -512,7 +537,7 @@ function openSampleForm() {
         <div class="fld"><label>Style name</label><input name="styleName" placeholder="Cable crewneck 12GG"></div>
       </div>
       <div class="frow">
-        <div class="fld"><label>Buyer <span class="req">*</span></label><select name="buyer" required>${c.buyers.map(b => `<option>${b}</option>`).join('')}</select></div>
+        <div class="fld"><label>Buyer <span class="req">*</span></label><input name="buyer" list="dl-buyers-2" required placeholder="Type or pick a buyer"><datalist id="dl-buyers-2">${buyerList().map(b => `<option value="${esc(b)}">`).join('')}</datalist></div>
         <div class="fld"><label>Season</label><select name="season"><option>FW26</option><option>SS27</option><option>FW27</option></select></div>
       </div>
       <div class="frow">
@@ -615,7 +640,7 @@ function openAccForm() {
         <div class="fld"><label>Specification</label><input name="spec" placeholder="Tagua nut, matte finish"></div>
       </div>
       <div class="frow">
-        <div class="fld"><label>Supplier <span class="req">*</span></label><select name="supplier" required>${catalog().suppliers.map(s => `<option>${esc(s.name)}</option>`).join('')}</select></div>
+        <div class="fld"><label>Supplier <span class="req">*</span></label><input name="supplier" list="dl-suppliers-2" required placeholder="Type or pick a supplier"><datalist id="dl-suppliers-2">${supplierList().map(s => `<option value="${esc(s)}">`).join('')}</datalist></div>
         <div class="fld"><label>PO ref</label><input name="po" placeholder="auto-generated if empty"></div>
       </div>
       <div class="frow">
@@ -688,7 +713,7 @@ function viewAnalytics() {
 
   <div class="card">
     <div class="card-h"><h3>Active delays — action board</h3><span class="sub">logistics assigns the reason code; merchandising sees the impact instantly</span>
-      <div class="right"><select class="tsel" data-filter="buyer"><option value="All">All buyers</option>${catalog().buyers.map(b => `<option${f.buyer === b ? ' selected' : ''}>${b}</option>`).join('')}</select></div></div>
+      <div class="right"><select class="tsel" data-filter="buyer"><option value="All">All buyers</option>${buyerList().map(b => `<option${f.buyer === b ? ' selected' : ''}>${b}</option>`).join('')}</select></div></div>
     <div class="tablewrap"><table>
       <thead><tr><th>Shipment</th><th>Buyer</th><th>ETA</th><th>Days late</th><th>Status</th><th>Reason code</th><th>Detail</th></tr></thead>
       <tbody>${tableRows.length ? tableRows.map(s => `
@@ -788,7 +813,7 @@ function viewImports() {
   <div class="toolbar">
     <label class="tsearch">${icon('search', 14)}<input placeholder="Search item, ref, supplier, buyer…" value="${esc(S.q)}" data-input="gq"></label>
     <select class="tsel" data-filter="importType">${opt('All', 'Yarn + Trims', !f.importType || f.importType === 'All')}${opt('Yarn', 'Yarn only', f.importType === 'Yarn')}${opt('Trims', 'Trims only', f.importType === 'Trims')}</select>
-    <select class="tsel" data-filter="impBuyer">${opt('All', 'All buyers', !f.impBuyer || f.impBuyer === 'All')}${catalog().buyers.map(b => opt(b, b, f.impBuyer === b)).join('')}</select>
+    <select class="tsel" data-filter="impBuyer">${opt('All', 'All buyers', !f.impBuyer || f.impBuyer === 'All')}${buyerList().map(b => opt(b, b, f.impBuyer === b)).join('')}</select>
     <select class="tsel" data-filter="importFlag">${opt('all', 'All statuses', !f.importFlag || f.importFlag === 'all')}${opt('delayed', 'Delayed / shortages', f.importFlag === 'delayed')}${opt('soon', 'Arriving ≤ 7 days', f.importFlag === 'soon')}${opt('customs', 'In customs', f.importFlag === 'customs')}</select>
     <button class="btn btn-ghost" data-action="export" data-module="shipments">${icon('download', 15)} Yarn CSV</button>
     <button class="btn btn-ghost" data-action="export" data-module="accessories">${icon('download', 15)} Trims CSV</button>
@@ -823,4 +848,83 @@ function notifPopHtml() {
         <span><span class="np-t">${esc(n.t)}</span><br><span class="np-s">${esc(n.s)}</span></span>
       </div>`).join('') : '<div class="empty">Nothing needs attention.</div>'}</div>
   </div>`;
+}
+
+
+/* ============================ ACCOUNT / DATA MODALS ============================ */
+function openUserMenu() {
+  const u = S.user;
+  openModal(`
+    <div class="m-h">${avatar(u, 'lg')}
+      <div style="min-width:0"><h2>${esc(u.name)}</h2>
+      <div class="m-sub">${esc(u.title || '')} · <span class="role-badge role-${u.role}">${esc(roleLabel(u.role))}</span></div></div>
+      <button class="icon-btn m-x" data-action="close">${icon('x', 16)}</button>
+    </div>
+    <div class="m-b" style="display:flex;flex-direction:column;gap:9px">
+      <button class="menu-row" data-action="open-chpass">${icon('lock', 16)} <span><b>Change my password</b><br><span class="td-sub">Update your own login password</span></span>${icon('arrow', 14)}</button>
+      ${isSuper() ? `<button class="menu-row" data-action="users-admin">${icon('edit', 16)} <span><b>Users &amp; passwords</b><br><span class="td-sub">Add users, set passwords — Super Admin only</span></span>${icon('arrow', 14)}</button>` : ''}
+      ${isDataAdmin() ? `<button class="menu-row" data-action="data-menu">${icon('download', 16)} <span><b>Data: backup, import &amp; demo</b><br><span class="td-sub">Export JSON, restore, clear demo / use your own data</span></span>${icon('arrow', 14)}</button>` : ''}
+      <button class="menu-row" data-action="logout" style="color:var(--red-ink)">${icon('out', 16)} <span><b>Sign out</b></span>${icon('arrow', 14)}</button>
+    </div>`, 'narrow');
+}
+function openChpass() {
+  openModal(`
+    <div class="m-h"><h2>${icon('lock', 18)} Change my password</h2><button class="icon-btn m-x" data-action="close">${icon('x', 16)}</button></div>
+    <form data-form="chpass" class="m-b frm">
+      <div class="fld"><label>Current password <span class="req">*</span></label><input type="password" name="current" required autocomplete="current-password"></div>
+      <div class="frow">
+        <div class="fld"><label>New password <span class="req">*</span></label><input type="password" name="next" required minlength="6" autocomplete="new-password"></div>
+        <div class="fld"><label>Confirm new <span class="req">*</span></label><input type="password" name="confirm" required minlength="6" autocomplete="new-password"></div>
+      </div>
+      <div class="fhelp">Minimum 6 characters. You stay signed in on this device.</div>
+      <div class="m-f"><button type="button" class="btn btn-ghost" data-action="close">Cancel</button><button class="btn btn-primary">Update password</button></div>
+    </form>`, 'narrow');
+}
+function openUsersAdmin() {
+  const groups = [['superadmin', 'Super Admin'], ['logistics', 'Logistics'], ['merchandising', 'Merchandising'], ['admin', 'Management']];
+  openModal(`
+    <div class="m-h"><h2>${icon('edit', 18)} Users &amp; passwords</h2><button class="icon-btn m-x" data-action="close">${icon('x', 16)}</button></div>
+    <div class="m-b">
+      ${S.state.users.map(u => `
+        <div class="doc-row" style="margin-bottom:8px">
+          ${avatar(u)}
+          <span style="min-width:0"><span class="doc-name">${esc(u.name)}</span> <span class="role-badge role-${u.role}">${esc(roleLabel(u.role))}</span><br><span class="td-sub">${esc(u.title || '')}${u.id === S.user.id ? ' · you' : ''}</span></span>
+          <form data-form="set-pass" style="margin-left:auto;display:flex;gap:6px;align-items:center">
+            <input type="hidden" name="id" value="${u.id}">
+            <input type="password" name="pass" placeholder="New password" minlength="6" required style="border:1.5px solid var(--border);border-radius:8px;padding:6px 10px;font-size:12.5px;width:150px">
+            <button class="btn btn-ghost btn-sm">Set</button>
+          </form>
+        </div>`).join('')}
+      <hr class="mut-line">
+      <h4 style="font-size:13px;font-weight:800;margin-bottom:10px">Add a user</h4>
+      <form data-form="add-user" class="frm" style="gap:10px">
+        <div class="frow">
+          <div class="fld"><label>Full name <span class="req">*</span></label><input name="name" required placeholder="e.g. Marie Dubois"></div>
+          <div class="fld"><label>Job title</label><input name="title" placeholder="e.g. Merchandiser — EU"></div>
+        </div>
+        <div class="fld"><label>Role <span class="req">*</span></label>
+          <select name="role" required>${groups.map(([k, l]) => `<option value="${k}">${l}</option>`).join('')}</select></div>
+        <div class="fhelp">New users start with the default password <b>flex2026</b> — set a real one above after adding.</div>
+        <div style="display:flex;justify-content:flex-end"><button class="btn btn-primary btn-sm">${icon('plus', 14)} Add user</button></div>
+      </form>
+    </div>`, 'mid');
+}
+function openDataMenu() {
+  const mode = (S.state.meta && S.state.meta.mode) || 'demo';
+  const n = S.state.shipments.length, m = S.state.samples.length, a = S.state.accessories.length;
+  openModal(`
+    <div class="m-h"><h2>${icon('download', 18)} Data — backup, import &amp; demo</h2><button class="icon-btn m-x" data-action="close">${icon('x', 16)}</button></div>
+    <div class="m-b" style="display:flex;flex-direction:column;gap:9px">
+      <div class="kv-inline" style="background:#f6f8fb;border:1px solid var(--border2);border-radius:10px;padding:10px 14px">
+        Workspace mode: ${mode === 'demo' ? chip('DEMO DATA', 'teal') : chip('YOUR OWN TEST DATA', 'amber')} ·
+        <b>${n}</b> shipments · <b>${m}</b> samples · <b>${a}</b> trims POs
+        ${mode === 'demo' ? '<br><span class="td-sub">Demo regenerates fresh dates each day. Clear it to keep your own entries permanently.</span>' : '<br><span class="td-sub">Custom mode: your data is kept as-is and never overwritten by the demo.</span>'}
+      </div>
+      <button class="menu-row" data-action="export-json">${icon('download', 16)} <span><b>Export JSON backup</b><br><span class="td-sub">Full workspace in one file — keep it safe, share it, re-import it</span></span>${icon('arrow', 14)}</button>
+      ${isDataAdmin() ? `
+      <label class="menu-row" style="cursor:pointer">${icon('refresh', 16)} <span><b>Import JSON backup</b><br><span class="td-sub">Restore from a flexknit-backup-*.json file (replaces current data)</span></span>${icon('arrow', 14)}
+        <input type="file" id="import-file" accept=".json,application/json" style="display:none"></label>
+      <button class="menu-row" data-action="clear-data">${icon('alert', 16)} <span><b>Clear demo data — use my own test data</b><br><span class="td-sub">Empties shipments, samples &amp; trims. Accounts stay. You enter fresh data (kept permanently).</span></span>${icon('arrow', 14)}</button>
+      <button class="menu-row" data-action="load-demo">${icon('grid', 16)} <span><b>Load demo data</b><br><span class="td-sub">Bring back the full FlexKnit demo workspace</span></span>${icon('arrow', 14)}</button>` : ''}
+    </div>`, 'narrow');
 }

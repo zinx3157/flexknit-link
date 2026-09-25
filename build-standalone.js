@@ -29,18 +29,15 @@ const LOCAL_API = `/* ---- local, in-browser API (standalone build: no server ne
 const LS_KEY = 'fk-standalone-state-v1';
 function lsOk() { try { localStorage.setItem('__fk_t', '1'); localStorage.removeItem('__fk_t'); return true; } catch (e) { return false; } }
 function loadState() {
-  if (lsOk()) {
-    try {
-      const raw = localStorage.getItem(LS_KEY);
-      if (raw) {
-        const st = JSON.parse(raw);
-        if (st.meta && st.meta.seededAt && st.meta.seededAt.slice(0, 10) === todayISO()) { S.state = st; return st; }
-      }
-    } catch (e) {}
-  }
-  const fresh = FlexSeed.build();
-  S.state = fresh; saveState();
-  return fresh;
+  let saved = null;
+  if (lsOk()) { try { const raw = localStorage.getItem(LS_KEY); if (raw) saved = JSON.parse(raw); } catch (e) {} }
+  const mode = saved && saved.meta ? (saved.meta.mode || 'demo') : 'demo';
+  const stale = !saved || !saved.meta || (mode !== 'custom' && (!saved.meta.seededAt || saved.meta.seededAt.slice(0, 10) !== todayISO()));
+  if (!stale) { S.state = saved; return saved; }
+  const st = FlexSeed.build();
+  if (saved && Array.isArray(saved.users) && saved.users.length) st.users = saved.users; // keep accounts & passwords
+  S.state = st; saveState();
+  return st;
 }
 function saveState(st) { if (lsOk()) { try { localStorage.setItem(LS_KEY, JSON.stringify(st || S.state)); } catch (e) {} } }
 function logAct(module, refId, action, detail, userId) {
@@ -77,7 +74,59 @@ async function api(path, opts = {}) {
   const method = opts.method || 'GET';
   const b = opts.body ? JSON.parse(opts.body) : {};
   if (method === 'GET' && path === '/api/state') { if (!S.state) loadState(); return S.state; }
-  if (method === 'POST' && path === '/api/reset') { S.state = FlexSeed.build(); saveState(); return { ok: true }; }
+  if (method === 'POST' && path === '/api/reset') {
+    const actor = S.state.users.find(u => u.id === b.userId);
+    if (!actor || !['superadmin', 'admin', 'logistics'].includes(actor.role)) throw new Error('Not allowed.');
+    const keepUsers = S.state.users;
+    S.state = FlexSeed.build(); S.state.users = keepUsers; saveState(); return { ok: true, mode: 'demo' };
+  }
+  if (method === 'POST' && path === '/api/login') {
+    const u = S.state.users.find(x => x.id === b.id);
+    if (!u || !b.passHash || u.passHash !== b.passHash) throw new Error('Wrong password for this account.');
+    return { ok: true, user: u };
+  }
+  if (method === 'POST' && path === '/api/users') {
+    const actor = S.state.users.find(u => u.id === b.userId);
+    if (!actor || actor.role !== 'superadmin') throw new Error('Only the Super Admin can add users.');
+    const nu = b.user || {};
+    if (!nu.name || !nu.role) throw new Error('Name and role are required.');
+    if (S.state.users.some(x => x.name.toLowerCase() === String(nu.name).toLowerCase())) throw new Error('A user with this name already exists.');
+    const palette = ['#0d9488', '#0284c7', '#d97706', '#7c3aed', '#db2777', '#4f46e5', '#c2410c', '#15803d', '#be185d', '#475569'];
+    let mx = 0; S.state.users.forEach(x => { const n = +String(x.id).replace(/\\D/g, '') || 0; if (n > mx) mx = n; });
+    const item = { id: 'u' + (mx + 1), name: String(nu.name).slice(0, 60), role: nu.role, title: String(nu.title || '').slice(0, 80), color: palette[Math.floor(Math.random() * palette.length)], passHash: nu.passHash || DEFAULT_HASH };
+    S.state.users.push(item);
+    logAct('system', item.id, 'User added', item.name + ' — ' + item.role, b.userId);
+    saveState(); return { user: item };
+  }
+  let um = path.match(/^\\/api\\/users\\/([^/]+)\\/pass$/);
+  if (um && method === 'POST') {
+    const target = S.state.users.find(x => x.id === decodeURIComponent(um[1]));
+    if (!target) throw new Error('user not found');
+    if (b.userId !== target.id) {
+      const actor = S.state.users.find(u => u.id === b.userId);
+      if (!actor || actor.role !== 'superadmin') throw new Error('Not allowed.');
+    }
+    if (!b.passHash || String(b.passHash).length !== 64) throw new Error('Invalid password hash.');
+    target.passHash = b.passHash;
+    logAct('system', target.id, 'Password changed', 'Password updated for ' + target.name, b.userId);
+    saveState(); return { ok: true };
+  }
+  if (method === 'POST' && path === '/api/clear') {
+    const actor = S.state.users.find(u => u.id === b.userId);
+    if (!actor || !['superadmin', 'admin'].includes(actor.role)) throw new Error('Only the Super Admin or Management can clear the workspace.');
+    S.state.shipments = []; S.state.samples = []; S.state.accessories = []; S.state.activity = [];
+    logAct('system', 'workspace', 'Workspace cleared', 'Demo data removed — ready for your own test data.', b.userId);
+    S.state.meta.mode = 'custom'; S.state.meta.clearedAt = new Date().toISOString();
+    saveState(); return { ok: true, mode: 'custom' };
+  }
+  if (method === 'POST' && path === '/api/import') {
+    const actor = S.state.users.find(u => u.id === b.userId);
+    if (!actor || !['superadmin', 'admin'].includes(actor.role)) throw new Error('Only the Super Admin or Management can import data.');
+    const st = b.state;
+    if (!st || typeof st !== 'object' || !Array.isArray(st.users) || !st.users.length || !Array.isArray(st.shipments) || !Array.isArray(st.samples) || !Array.isArray(st.accessories) || !st.catalog) throw new Error('Invalid backup file.');
+    st.meta = st.meta || {}; st.meta.mode = 'custom'; st.meta.importedAt = new Date().toISOString();
+    S.state = st; saveState(); return { ok: true, mode: 'custom' };
+  }
 
   let m;
   if (method === 'POST' && path === '/api/shipments') {

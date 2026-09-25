@@ -5,12 +5,67 @@
    View templates live in views.js.
    ============================================================ */
 
-const S = { state: null, user: null, route: 'dashboard', q: '', f: {}, shipTab: 'overview', notifOpen: false, modal: null };
+const S = { state: null, user: null, route: 'dashboard', q: '', f: {}, shipTab: 'overview', notifOpen: false, modal: null, loginUser: null, loginErr: null };
 
 /* ---------------- helpers ---------------- */
 const $  = (sel, el) => (el || document).querySelector(sel);
 const $$ = (sel, el) => Array.from((el || document).querySelectorAll(sel));
 const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+/* dependency-free SHA-256 (verified against Node crypto) — for password auth */
+function sha256(str) {
+  const ascii = unescape(encodeURIComponent(str));
+  function rr(v, a) { return (v >>> a) | (v << (32 - a)); }
+  const maxWord = Math.pow(2, 32);
+  let result = '';
+  const words = [], bitLen = ascii.length * 8;
+  const hash = [], k = [];
+  let pc = 0;
+  const isComposite = {};
+  for (let cand = 2; pc < 64; cand++) {
+    if (!isComposite[cand]) {
+      for (let i = 0; i < 313; i += cand) isComposite[i] = cand;
+      hash[pc] = (Math.pow(cand, 0.5) * maxWord) | 0;
+      k[pc++] = (Math.pow(cand, 1 / 3) * maxWord) | 0;
+    }
+  }
+  let a2 = ascii + '\x80';
+  while (a2.length % 64 - 56) a2 += '\x00';
+  for (let i = 0; i < a2.length; i++) words[i >> 2] |= a2.charCodeAt(i) << ((3 - i) % 4) * 8;
+  words[words.length] = (bitLen / maxWord) | 0;
+  words[words.length] = bitLen;
+  for (let j = 0; j < words.length;) {
+    const w = words.slice(j, j += 16);
+    for (let i = 16; i < 64; i++) {
+      const w15 = w[i - 15], w2 = w[i - 2];
+      const s0 = rr(w15, 7) ^ rr(w15, 18) ^ (w15 >>> 3);
+      const s1 = rr(w2, 17) ^ rr(w2, 19) ^ (w2 >>> 10);
+      w[i] = (w[i - 16] + s0 + w[i - 7] + s1) | 0;
+    }
+    let a = hash[0], b = hash[1], c = hash[2], d = hash[3], e = hash[4], f = hash[5], g = hash[6], h = hash[7];
+    for (let i = 0; i < 64; i++) {
+      const S1 = rr(e, 6) ^ rr(e, 11) ^ rr(e, 25);
+      const ch = (e & f) ^ (~e & g);
+      const t1 = (h + S1 + ch + k[i] + w[i]) | 0;
+      const S0 = rr(a, 2) ^ rr(a, 13) ^ rr(a, 22);
+      const maj = (a & b) ^ (a & c) ^ (b & c);
+      const t2 = (S0 + maj) | 0;
+      h = g; g = f; f = e; e = (d + t1) | 0;
+      d = c; c = b; b = a; a = (t1 + t2) | 0;
+    }
+    for (let i = 0; i < 8; i++) hash[i] = (hash[i] + [a, b, c, d, e, f, g, h][i]) | 0;
+  }
+  for (let i = 0; i < 8; i++)
+    for (let j2 = 3; j2 + 1; j2--) {
+      const b2 = (hash[i] >> (j2 * 8)) & 255;
+      result += (b2 >> 4).toString(16) + (b2 & 15).toString(16);
+    }
+  return result;
+}
+const DEFAULT_HASH = '11d3bf68eeac637c516d4f7eda95442f327ec53d316fedad315877f8b0e57c04'; // sha256('flex2026')
+const checkPass = (u, pass) => sha256(pass) === (u.passHash || DEFAULT_HASH);
+const isSuper = () => S.user && S.user.role === 'superadmin';
+const isDataAdmin = () => S.user && (S.user.role === 'superadmin' || S.user.role === 'admin');
+
 
 function parseD(s) { if (!s) return null; const [y, m, d] = s.split('-').map(Number); return new Date(y, m - 1, d); }
 function diffDays(a, b) { return Math.round((parseD(a) - parseD(b)) / 864e5); }
@@ -35,6 +90,16 @@ async function api(path, opts = {}) {
   if (!res.ok) throw new Error(data.error || res.statusText);
   return data;
 }
+function downloadJson(obj, name) {
+  try {
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(new Blob([JSON.stringify(obj, null, 2)], { type: 'application/json' }));
+    a.download = name;
+    document.body.appendChild(a); a.click(); a.remove();
+    toast('Backup downloaded');
+  } catch (e) { toast('Download blocked in this preview — download the HTML file and open in your browser', 'err'); }
+}
+
 /* storage-safe helpers (localStorage throws in sandboxed/opaque-origin contexts) */
 const lsGet = k => { try { return localStorage.getItem(k); } catch (e) { return null; } };
 const lsSet = (k, v) => { try { localStorage.setItem(k, v); } catch (e) {} };
@@ -241,7 +306,7 @@ function renderShell() {
         ).join('')}
       </nav>
       <div class="side-foot">
-        <button class="who" data-action="logout" title="Switch user">
+        <button class="who" data-action="user-menu" title="Account, data & sign out">
           ${avatar(u)}<span><span class="wn">${esc(u.name)}</span><span class="wr">${roleLabel(u.role)}</span></span>
           <span class="out">${icon('out', 16)}</span>
         </button>
@@ -292,8 +357,31 @@ document.addEventListener('click', e => {
   const act = el.dataset.action, id = el.dataset.id;
   const A = {
     'nav': () => setRoute(el.dataset.nav),
-    'login': () => { S.user = S.state.users.find(u => u.id === el.dataset.id); lsSet('fk-user', S.user.id); renderShell(); toast(`Welcome, ${S.user.name.split(' ')[0]} — signed in as ${roleLabel(S.user.role)}`); },
-    'logout': () => { S.user = null; lsDel('fk-user'); renderLogin(); },
+    'pick-user': () => { S.loginUser = el.dataset.id; S.loginErr = null; renderLogin(); setTimeout(() => { const inp = $('#login-pass'); if (inp) inp.focus(); }, 30); },
+    'logout': () => { S.user = null; lsDel('fk-session'); renderLogin(); },
+    'user-menu': () => openUserMenu(),
+    'open-chpass': () => openChpass(),
+    'users-admin': () => openUsersAdmin(),
+    'data-menu': () => openDataMenu(),
+    'export-json': () => {
+      if (!isDataAdmin()) return toast('Not allowed', 'err');
+      downloadJson(S.state, 'flexknit-backup-' + todayISO() + '.json');
+    },
+    'clear-data': () => {
+      if (!isDataAdmin()) return toast('Only Super Admin or Management can clear data', 'err');
+      if (el.dataset.arm !== '1') { el.dataset.arm = '1'; el.innerHTML = icon('alert', 15) + ' Click again to confirm — demo data will be removed'; el.classList.add('btn-danger'); return; }
+      (async () => {
+        try { await api('/api/clear', { method: 'POST', body: JSON.stringify({ userId: S.user.id }) }); S.f = {}; toast('Workspace cleared — ready for your own data'); closeModal(); await refresh(); }
+        catch (e) { toast(e.message, 'err'); }
+      })();
+    },
+    'load-demo': () => {
+      if (el.dataset.arm !== '1') { el.dataset.arm = '1'; el.innerHTML = icon('refresh', 15) + ' Click again to confirm — current data will be replaced'; el.classList.add('btn-danger'); return; }
+      (async () => {
+        try { await api('/api/reset', { method: 'POST', body: JSON.stringify({ userId: S.user.id }) }); S.f = {}; toast('Demo data loaded'); closeModal(); await refresh(); }
+        catch (e) { toast(e.message, 'err'); }
+      })();
+    },
     'notifs': () => { S.notifOpen = !S.notifOpen; $('#notif-pop').innerHTML = S.notifOpen ? notifPopHtml() : ''; },
     'notif-go': () => {
       S.notifOpen = false; $('#notif-pop').innerHTML = '';
@@ -341,7 +429,43 @@ document.addEventListener('submit', async e => {
   if (!f) return;
   e.preventDefault();
   const kind = f.dataset.form, fd = Object.fromEntries(new FormData(f).entries());
-  const uid = S.user.id;
+  if (kind === 'login') {
+    const u = S.state.users.find(x => x.id === S.loginUser);
+    if (!u) { S.loginErr = 'Pick an account first.'; renderLogin(); return; }
+    if (!checkPass(u, fd.pass || '')) { S.loginErr = `Wrong password for ${u.name}.`; renderLogin(); return; }
+    S.user = u; S.loginUser = null; S.loginErr = null;
+    lsSet('fk-session', u.id);
+    renderShell();
+    toast(`Welcome, ${u.name.split(' ')[0]} — signed in as ${roleLabel(u.role)}`);
+    return;
+  }
+  const uid = S.user ? S.user.id : null;
+  if (kind === 'chpass') {
+    const me = S.user;
+    if (!checkPass(me, fd.current || '')) { toast('Current password is wrong', 'err'); return; }
+    if ((fd.next || '').length < 6) { toast('New password must be at least 6 characters', 'err'); return; }
+    if (fd.next !== fd.confirm) { toast('Passwords do not match', 'err'); return; }
+    try {
+      await api(`/api/users/${me.id}/pass`, { method: 'POST', body: JSON.stringify({ userId: me.id, passHash: sha256(fd.next) }) });
+      toast('Password updated'); closeModal();
+    } catch (e) { toast(e.message, 'err'); }
+    return;
+  }
+  if (kind === 'add-user') {
+    try {
+      await api('/api/users', { method: 'POST', body: JSON.stringify({ userId: uid, user: { name: fd.name, title: fd.title, role: fd.role } }) });
+      toast('User added — default password: flex2026'); await refresh(); openUsersAdmin();
+    } catch (e) { toast(e.message, 'err'); }
+    return;
+  }
+  if (kind === 'set-pass') {
+    if ((fd.pass || '').length < 6) { toast('Password must be at least 6 characters', 'err'); return; }
+    try {
+      await api(`/api/users/${fd.id}/pass`, { method: 'POST', body: JSON.stringify({ userId: uid, passHash: sha256(fd.pass) }) });
+      toast('Password set for ' + (S.state.users.find(u => u.id === fd.id) || {}).name); closeModal();
+    } catch (e) { toast(e.message, 'err'); }
+    return;
+  }
   try {
     if (kind === 'comment-ship') {
       await api(`/api/shipments/${fd.id}/comments`, { method: 'POST', body: JSON.stringify({ userId: uid, text: fd.text }) });
@@ -408,6 +532,22 @@ document.addEventListener('input', e => {
   }
 });
 document.addEventListener('change', e => {
+  if (e.target.id === 'import-file') {
+    const file = e.target.files[0];
+    if (!file) return;
+    if (!isDataAdmin()) { toast('Only Super Admin or Management can import', 'err'); return; }
+    const rd = new FileReader();
+    rd.onload = async () => {
+      try {
+        const state = JSON.parse(rd.result);
+        await api('/api/import', { method: 'POST', body: JSON.stringify({ userId: S.user.id, state }) });
+        S.f = {}; S.q = ''; const g = $('#gq'); if (g) g.value = '';
+        toast('Backup imported — workspace updated'); closeModal(); await refresh();
+      } catch (err) { toast('Import failed: ' + (err.message || 'invalid file'), 'err'); }
+    };
+    rd.readAsText(file);
+    return;
+  }
   const el = e.target.closest('[data-filter]');
   if (el) { S.f[el.dataset.filter] = el.value; const V = { shipments: viewShipments, samples: viewSamples, accessories: viewAccessories, analytics: viewAnalytics, imports: viewImports }; if (V[S.route]) $('#view').innerHTML = V[S.route](); return; }
   const st = e.target.closest('[data-status-of]');
@@ -429,8 +569,8 @@ function boot() {
   (async () => {
     try {
       S.state = await api('/api/state');
-      const saved = lsGet('fk-user');
-      S.user = S.state.users.find(u => u.id === saved) || null;
+      const sess = lsGet('fk-session');
+      S.user = S.state.users.find(u => u.id === sess) || null;
       S.user ? renderShell() : renderLogin();
     } catch (err) {
       $('#root').innerHTML = `<div style="padding:60px;text-align:center;color:#75808e">Failed to start FlexKnit Link.<br><br><code>${esc(err.message)}</code></div>`;
