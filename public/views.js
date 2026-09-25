@@ -6,6 +6,7 @@
 /* ============================ LOGIN ============================ */
 function viewLogin() {
   const groups = [
+    { key: 'superadmin', label: 'Super Admin', color: '#c2410c' },
     { key: 'logistics', label: 'Logistics & Import desk', color: '#0d9488' },
     { key: 'merchandising', label: 'Merchandising', color: '#7c3aed' },
     { key: 'admin', label: 'Management', color: '#475569' }
