@@ -8,8 +8,21 @@ const seed = require('./server/seed');
 
 let db;
 function load() {
-  try { db = JSON.parse(fs.readFileSync(DBP, 'utf8')); }
-  catch (e) { db = seed.build(); persist(); }
+  try {
+    const saved = JSON.parse(fs.readFileSync(DBP, 'utf8'));
+    const isCustom = saved && saved.meta && saved.meta.mode === 'custom' && Array.isArray(saved.users) && saved.users.length;
+    const upToDate = saved && saved.meta && +saved.meta.seedVersion === +seed.VERSION;
+    if (isCustom || upToDate) { db = saved; }
+    else {
+      const fresh = seed.build();
+      if (saved && Array.isArray(saved.users) && saved.users.length) {
+        const names = new Set(fresh.users.map(u => String(u.name).toLowerCase()));
+        saved.users.forEach(u => { if (u && u.name && !names.has(String(u.name).toLowerCase())) { fresh.users.push(u); names.add(String(u.name).toLowerCase()); } });
+      }
+      db = fresh;
+    }
+    persist();
+  } catch (e) { db = seed.build(); persist(); }
 }
 function persist() {
   fs.mkdirSync(path.dirname(DBP), { recursive: true });

@@ -1,6 +1,9 @@
 'use strict';
 /* FlexKnit Link — demo seed data generator.
-   All dates are generated relative to "today" so the demo always looks live. */
+   All dates are generated relative to "today" so the demo always looks live.
+   SEED_VERSION: bump when seed accounts/data change, so returning visitors'
+   stale demo state is refreshed (custom-mode data is never touched). */
+const SEED_VERSION = 4;
 
 const DAY = 864e5;
 const d = (off) => { const t = new Date(); t.setHours(12, 0, 0, 0); return new Date(t.getTime() + off * DAY).toISOString().slice(0, 10); };
@@ -267,10 +270,10 @@ function build() {
   return {
     meta: {
       company: 'FlexKnit Factories', app: 'FlexKnit Link', tagline: 'Logistics × Merchandising Control Tower',
-      site: 'Antananarivo · Madagascar', hub: 'Toamasina Port', mode: 'demo', seededAt: new Date().toISOString()
+      site: 'Antananarivo · Madagascar', hub: 'Toamasina Port', mode: 'demo', seedVersion: SEED_VERSION, seededAt: new Date().toISOString()
     },
     users, catalog, shipments, samples, accessories, activity
   };
 }
 
-module.exports = { build };
+module.exports = { build, VERSION: SEED_VERSION };

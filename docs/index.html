@@ -390,7 +390,10 @@ th.num{text-align:right}
 /* ==================== SEED DATA (generated fresh each day) ==================== */
 'use strict';
 /* FlexKnit Link — demo seed data generator.
-   All dates are generated relative to "today" so the demo always looks live. */
+   All dates are generated relative to "today" so the demo always looks live.
+   SEED_VERSION: bump when seed accounts/data change, so returning visitors'
+   stale demo state is refreshed (custom-mode data is never touched). */
+const SEED_VERSION = 4;
 
 const DAY = 864e5;
 const d = (off) => { const t = new Date(); t.setHours(12, 0, 0, 0); return new Date(t.getTime() + off * DAY).toISOString().slice(0, 10); };
@@ -657,13 +660,13 @@ function build() {
   return {
     meta: {
       company: 'FlexKnit Factories', app: 'FlexKnit Link', tagline: 'Logistics × Merchandising Control Tower',
-      site: 'Antananarivo · Madagascar', hub: 'Toamasina Port', mode: 'demo', seededAt: new Date().toISOString()
+      site: 'Antananarivo · Madagascar', hub: 'Toamasina Port', mode: 'demo', seedVersion: SEED_VERSION, seededAt: new Date().toISOString()
     },
     users, catalog, shipments, samples, accessories, activity
   };
 }
 
-var FlexSeed = { build };
+var FlexSeed = { build, VERSION: SEED_VERSION };
 
 </script>
 <script>
@@ -1694,11 +1697,18 @@ function lsOk() { try { localStorage.setItem('__fk_t', '1'); localStorage.remove
 function loadState() {
   let saved = null;
   if (lsOk()) { try { const raw = localStorage.getItem(LS_KEY); if (raw) saved = JSON.parse(raw); } catch (e) {} }
-  const mode = saved && saved.meta ? (saved.meta.mode || 'demo') : 'demo';
-  const stale = !saved || !saved.meta || (mode !== 'custom' && (!saved.meta.seededAt || saved.meta.seededAt.slice(0, 10) !== todayISO()));
+  if (saved && saved.meta && saved.meta.mode === 'custom' && Array.isArray(saved.users) && saved.users.length) { S.state = saved; return saved; }
+  const stale = !saved || !saved.meta || !Array.isArray(saved.users) || !saved.users.length
+    || !saved.meta.seededAt || saved.meta.seededAt.slice(0, 10) !== todayISO()
+    || +(saved.meta.seedVersion || 0) !== +FlexSeed.VERSION;
   if (!stale) { S.state = saved; return saved; }
   const st = FlexSeed.build();
-  if (saved && Array.isArray(saved.users) && saved.users.length) st.users = saved.users; // keep accounts & passwords
+  if (saved && Array.isArray(saved.users) && saved.users.length) {
+    const names = new Set(st.users.map(u => String(u.name).toLowerCase()));
+    saved.users.forEach(u => {
+      if (u && u.name && !names.has(String(u.name).toLowerCase())) { st.users.push(u); names.add(String(u.name).toLowerCase()); }
+    });
+  }
   S.state = st; saveState();
   return st;
 }

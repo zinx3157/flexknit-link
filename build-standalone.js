@@ -16,7 +16,7 @@ function patch(src, from, to, label) {
 }
 
 /* ---- 1. seed: drop module.exports ---- */
-const seedInline = patch(seed, "module.exports = { build };", "var FlexSeed = { build };", 'seed exports');
+const seedInline = patch(seed, "module.exports = { build, VERSION: SEED_VERSION };", "var FlexSeed = { build, VERSION: SEED_VERSION };", 'seed exports');
 
 /* ---- 2. app: local API instead of fetch ---- */
 const API_BLOCK = `async function api(path, opts = {}) {
@@ -31,11 +31,18 @@ function lsOk() { try { localStorage.setItem('__fk_t', '1'); localStorage.remove
 function loadState() {
   let saved = null;
   if (lsOk()) { try { const raw = localStorage.getItem(LS_KEY); if (raw) saved = JSON.parse(raw); } catch (e) {} }
-  const mode = saved && saved.meta ? (saved.meta.mode || 'demo') : 'demo';
-  const stale = !saved || !saved.meta || (mode !== 'custom' && (!saved.meta.seededAt || saved.meta.seededAt.slice(0, 10) !== todayISO()));
+  if (saved && saved.meta && saved.meta.mode === 'custom' && Array.isArray(saved.users) && saved.users.length) { S.state = saved; return saved; }
+  const stale = !saved || !saved.meta || !Array.isArray(saved.users) || !saved.users.length
+    || !saved.meta.seededAt || saved.meta.seededAt.slice(0, 10) !== todayISO()
+    || +(saved.meta.seedVersion || 0) !== +FlexSeed.VERSION;
   if (!stale) { S.state = saved; return saved; }
   const st = FlexSeed.build();
-  if (saved && Array.isArray(saved.users) && saved.users.length) st.users = saved.users; // keep accounts & passwords
+  if (saved && Array.isArray(saved.users) && saved.users.length) {
+    const names = new Set(st.users.map(u => String(u.name).toLowerCase()));
+    saved.users.forEach(u => {
+      if (u && u.name && !names.has(String(u.name).toLowerCase())) { st.users.push(u); names.add(String(u.name).toLowerCase()); }
+    });
+  }
   S.state = st; saveState();
   return st;
 }
