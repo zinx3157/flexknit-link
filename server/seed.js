@@ -14,7 +14,8 @@ function build() {
     { id: 'u4', name: 'Lova Rasoa',     role: 'merchandising', title: 'Merch Manager — EU/UK',     color: '#7c3aed' },
     { id: 'u5', name: 'Tojo Rajaon',    role: 'merchandising', title: 'Merchandiser — US',         color: '#db2777' },
     { id: 'u6', name: 'Faniry Rasolo',  role: 'merchandising', title: 'Merchandiser — Knitwear',   color: '#4f46e5' },
-    { id: 'u7', name: 'Rado Rakotobe',  role: 'admin',         title: 'Operations Director',       color: '#475569' }
+    { id: 'u7', name: 'Rado Rakotobe',  role: 'admin',         title: 'Operations Director',       color: '#475569' },
+    { id: 'u8', name: 'Jeroen Stuurop', role: 'superadmin',    title: 'Super Admin · Flex Sales Dept', color: '#c2410c' }
   ];
 
   const catalog = {

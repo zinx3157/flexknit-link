@@ -40,7 +40,7 @@ function viewLogin() {
             <span class="up-go">${icon('arrow', 16)}</span>
           </button>`).join('')}
       `).join('')}
-      <div class="login-note"><b>Roles:</b> logistics can update ETAs, log delays, tick documents and book couriers. Merchandising comments, raises sample requests and tracks anything affecting the production plan.</div>
+      <div class="login-note"><b>Roles:</b> the Super Admin sees and does everything. Logistics updates ETAs, logs delays, ticks documents and books couriers. Merchandising comments, raises sample requests and tracks anything affecting the production plan.</div>
     </div></div>
   </div>`;
 }
@@ -354,7 +354,7 @@ function shipComments(s) {
 function cm(c) {
   const u = user(c.by) || { name: 'System', color: '#94a3b8', role: 'system' };
   return `<div class="cm">${avatar(u)}
-    <div class="cm-bubble"><div class="cm-h"><b>${esc(u.name)}</b><span class="role-badge role-${u.role}">${u.role}</span><time>${ago(c.at)}</time></div>${esc(c.text)}</div>
+    <div class="cm-bubble"><div class="cm-h"><b>${esc(u.name)}</b><span class="role-badge role-${u.role}">${esc(roleLabel(u.role))}</span><time>${ago(c.at)}</time></div>${esc(c.text)}</div>
   </div>`;
 }
 

@@ -94,6 +94,7 @@ const acChip = s => chip(esc(s), ACC_ST[s] || 'slate');
 
 const catalog = () => S.state.catalog;
 const user = id => S.state.users.find(u => u.id === id);
+const roleLabel = r => ({ superadmin: 'Super Admin', logistics: 'Logistics', merchandising: 'Merchandising', admin: 'Management', system: 'System' }[r] || (r || 'System'));
 const avatar = (u, cls) => `<span class="avatar ${cls || ''}" style="background:${u.color}" title="${esc(u.name)}">${initials(u.name)}</span>`;
 const can = () => S.user && S.user.role !== 'merchandising'; // logistics & admin can operate
 const delayLabel = code => { const r = catalog().delayReasons.find(d => d.code === code); return r ? `${r.code} · ${r.label}` : (code || '—'); };
@@ -241,7 +242,7 @@ function renderShell() {
       </nav>
       <div class="side-foot">
         <button class="who" data-action="logout" title="Switch user">
-          ${avatar(u)}<span><span class="wn">${esc(u.name)}</span><span class="wr">${u.role}</span></span>
+          ${avatar(u)}<span><span class="wn">${esc(u.name)}</span><span class="wr">${roleLabel(u.role)}</span></span>
           <span class="out">${icon('out', 16)}</span>
         </button>
       </div>
@@ -291,7 +292,7 @@ document.addEventListener('click', e => {
   const act = el.dataset.action, id = el.dataset.id;
   const A = {
     'nav': () => setRoute(el.dataset.nav),
-    'login': () => { S.user = S.state.users.find(u => u.id === el.dataset.id); lsSet('fk-user', S.user.id); renderShell(); toast(`Welcome, ${S.user.name.split(' ')[0]} — signed in as ${S.user.role}`); },
+    'login': () => { S.user = S.state.users.find(u => u.id === el.dataset.id); lsSet('fk-user', S.user.id); renderShell(); toast(`Welcome, ${S.user.name.split(' ')[0]} — signed in as ${roleLabel(S.user.role)}`); },
     'logout': () => { S.user = null; lsDel('fk-user'); renderLogin(); },
     'notifs': () => { S.notifOpen = !S.notifOpen; $('#notif-pop').innerHTML = S.notifOpen ? notifPopHtml() : ''; },
     'notif-go': () => {

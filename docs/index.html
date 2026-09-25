@@ -149,6 +149,7 @@ svg{display:block}
 .role-logistics{background:var(--teal-bg);color:var(--accent-ink)}
 .role-merchandising{background:var(--violet-bg);color:var(--violet)}
 .role-admin{background:var(--slate-bg);color:#475569}
+.role-superadmin{background:#ffe8d9;color:#c2410c}
 
 /* ============================ BUTTONS ============================ */
 .btn{display:inline-flex;align-items:center;gap:7px;font-size:13px;font-weight:700;border-radius:9px;padding:8.5px 14px;transition:.14s;border:1.5px solid transparent}
@@ -392,7 +393,8 @@ function build() {
     { id: 'u4', name: 'Lova Rasoa',     role: 'merchandising', title: 'Merch Manager — EU/UK',     color: '#7c3aed' },
     { id: 'u5', name: 'Tojo Rajaon',    role: 'merchandising', title: 'Merchandiser — US',         color: '#db2777' },
     { id: 'u6', name: 'Faniry Rasolo',  role: 'merchandising', title: 'Merchandiser — Knitwear',   color: '#4f46e5' },
-    { id: 'u7', name: 'Rado Rakotobe',  role: 'admin',         title: 'Operations Director',       color: '#475569' }
+    { id: 'u7', name: 'Rado Rakotobe',  role: 'admin',         title: 'Operations Director',       color: '#475569' },
+    { id: 'u8', name: 'Jeroen Stuurop', role: 'superadmin',    title: 'Super Admin · Flex Sales Dept', color: '#c2410c' }
   ];
 
   const catalog = {
@@ -697,7 +699,7 @@ function viewLogin() {
             <span class="up-go">${icon('arrow', 16)}</span>
           </button>`).join('')}
       `).join('')}
-      <div class="login-note"><b>Roles:</b> logistics can update ETAs, log delays, tick documents and book couriers. Merchandising comments, raises sample requests and tracks anything affecting the production plan.</div>
+      <div class="login-note"><b>Roles:</b> the Super Admin sees and does everything. Logistics updates ETAs, logs delays, ticks documents and books couriers. Merchandising comments, raises sample requests and tracks anything affecting the production plan.</div>
     </div></div>
   </div>`;
 }
@@ -1011,7 +1013,7 @@ function shipComments(s) {
 function cm(c) {
   const u = user(c.by) || { name: 'System', color: '#94a3b8', role: 'system' };
   return `<div class="cm">${avatar(u)}
-    <div class="cm-bubble"><div class="cm-h"><b>${esc(u.name)}</b><span class="role-badge role-${u.role}">${u.role}</span><time>${ago(c.at)}</time></div>${esc(c.text)}</div>
+    <div class="cm-bubble"><div class="cm-h"><b>${esc(u.name)}</b><span class="role-badge role-${u.role}">${esc(roleLabel(u.role))}</span><time>${ago(c.at)}</time></div>${esc(c.text)}</div>
   </div>`;
 }
 
@@ -1717,6 +1719,7 @@ const acChip = s => chip(esc(s), ACC_ST[s] || 'slate');
 
 const catalog = () => S.state.catalog;
 const user = id => S.state.users.find(u => u.id === id);
+const roleLabel = r => ({ superadmin: 'Super Admin', logistics: 'Logistics', merchandising: 'Merchandising', admin: 'Management', system: 'System' }[r] || (r || 'System'));
 const avatar = (u, cls) => `<span class="avatar ${cls || ''}" style="background:${u.color}" title="${esc(u.name)}">${initials(u.name)}</span>`;
 const can = () => S.user && S.user.role !== 'merchandising'; // logistics & admin can operate
 const delayLabel = code => { const r = catalog().delayReasons.find(d => d.code === code); return r ? `${r.code} · ${r.label}` : (code || '—'); };
@@ -1864,7 +1867,7 @@ function renderShell() {
       </nav>
       <div class="side-foot">
         <button class="who" data-action="logout" title="Switch user">
-          ${avatar(u)}<span><span class="wn">${esc(u.name)}</span><span class="wr">${u.role}</span></span>
+          ${avatar(u)}<span><span class="wn">${esc(u.name)}</span><span class="wr">${roleLabel(u.role)}</span></span>
           <span class="out">${icon('out', 16)}</span>
         </button>
       </div>
@@ -1914,7 +1917,7 @@ document.addEventListener('click', e => {
   const act = el.dataset.action, id = el.dataset.id;
   const A = {
     'nav': () => setRoute(el.dataset.nav),
-    'login': () => { S.user = S.state.users.find(u => u.id === el.dataset.id); lsSet('fk-user', S.user.id); renderShell(); toast(`Welcome, ${S.user.name.split(' ')[0]} — signed in as ${S.user.role}`); },
+    'login': () => { S.user = S.state.users.find(u => u.id === el.dataset.id); lsSet('fk-user', S.user.id); renderShell(); toast(`Welcome, ${S.user.name.split(' ')[0]} — signed in as ${roleLabel(S.user.role)}`); },
     'logout': () => { S.user = null; lsDel('fk-user'); renderLogin(); },
     'notifs': () => { S.notifOpen = !S.notifOpen; $('#notif-pop').innerHTML = S.notifOpen ? notifPopHtml() : ''; },
     'notif-go': () => {

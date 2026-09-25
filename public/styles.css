@@ -141,6 +141,7 @@ svg{display:block}
 .role-logistics{background:var(--teal-bg);color:var(--accent-ink)}
 .role-merchandising{background:var(--violet-bg);color:var(--violet)}
 .role-admin{background:var(--slate-bg);color:#475569}
+.role-superadmin{background:#ffe8d9;color:#c2410c}
 
 /* ============================ BUTTONS ============================ */
 .btn{display:inline-flex;align-items:center;gap:7px;font-size:13px;font-weight:700;border-radius:9px;padding:8.5px 14px;transition:.14s;border:1.5px solid transparent}
