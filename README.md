@@ -1,6 +1,6 @@
 # FlexKnit Link — Logistics × Merchandising Control Tower
 
-Internal SaaS platform for **FlexKnit Factories** (Antananarivo, Madagascar) that connects the **logistics/import desk** with **merchandising colleagues** around one shared, live picture of everything moving into the factory.
+Prototype for **FlexKnit Factories** (Antananarivo, Madagascar) that demonstrates a logistics/import and merchandising control tower. The GitHub Pages version is a single-file demo: changes are saved only in the current browser and are not shared between colleagues.
 
 **Design inspiration:** the operating discipline of the world's top knitwear manufacturers — vertically-integrated, data-driven supply chains like **ERDOS Group** (Ordos), **Consinee Group** (Ningbo), **Newtimes Group**, **Zhejiang Xinao** (Tongxiang) and **Crystal International** — where merchandising, sourcing and logistics work from a single control tower instead of email threads and spreadsheets.
 
@@ -20,7 +20,7 @@ Internal SaaS platform for **FlexKnit Factories** (Antananarivo, Madagascar) tha
 
 ## Sign-in & roles
 
-Every account signs in with a password (**default `flex2026`** — shown on the login screen; change it after first sign-in). Sessions persist on the device; passwords are stored as SHA-256 hashes.
+Demo accounts use the public default password **`flex2026`**. The GitHub Pages build checks passwords and roles in the browser; these do not protect business data or provide real user authentication. Do not enter confidential shipment or customer information in the public demo. The separate Node server prototype also needs proper server-side sessions and authorization before production use.
 
 - **Super Admin** — Jeroen Stuurop (Flex Sales Dept): everything below **plus** user management (add users, set any user's password) and data administration (JSON backup export/import, clear demo data, load demo data).
 - **Logistics** — Hery (lead), Miora (imports), Naina (customs & docs): create shipments, update ETA (logged in ETA history), report/clear delays with reason codes, tick document checklists, book sample couriers, record trims receipts.
@@ -35,7 +35,7 @@ Menu (avatar, bottom-left) → **Data: backup, import & demo**:
 
 - **Export JSON backup** — full workspace in one file
 - **Import JSON backup** — restore from a backup file
-- **Clear demo data — use my own test data** — empties shipments/samples/trims (accounts stay) and switches the workspace to *custom mode*: your entries are kept permanently, never overwritten by the daily demo refresh (single-file build)
+- **Clear demo data — use my own test data** — empties shipments/samples/trims (accounts stay) and switches the workspace to *custom mode*. The first edit to demo data also switches to custom mode so that daily demo refresh cannot overwrite edits. Browser storage can still be cleared, so export backups regularly.
 - **Load demo data** — bring the full demo back any time
 
 ## Run it
@@ -43,6 +43,7 @@ Menu (avatar, bottom-left) → **Data: backup, import & demo**:
 ```bash
 cd flexknit-link
 node server.js          # → http://localhost:3000  (zero dependencies, Node ≥ 16)
+node build-standalone.js # rebuild docs/index.html for GitHub Pages
 ```
 
 - Data is seeded **relative to today**, so the demo always looks live (ETAs days away, customs holds in progress…).

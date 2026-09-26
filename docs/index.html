@@ -367,6 +367,14 @@ th.num{text-align:right}
   .kpis{grid-template-columns:1fr}
   .facts{grid-template-columns:1fr}
   .gsearch{display:none}
+  .view{padding:12px;min-width:0}
+  .topbar{padding:0 12px;gap:6px}
+  .tb-title{flex:1;min-width:0}
+  .tb-title h1{overflow:hidden;text-overflow:ellipsis}
+  .tb-title p,.demo-chip{display:none}
+  .tb-right{gap:6px}
+  .login-panel{padding:24px 16px;align-items:flex-start}
+  .tablewrap{max-width:100%}
 }
 
 /* ============================ AUTH & MENUS ============================ */
@@ -704,7 +712,7 @@ function viewLogin() {
     </div>
     <div class="login-panel"><div class="login-box">
       <h2>Sign in to your workspace</h2>
-      <p class="hint">Demo mode — pick a user to explore the platform with their permissions.</p>
+      <p class="hint">Pick a demo user to explore the platform with their permissions.</p>
       ${groups.map(g => `
         <div class="team-head"><span class="dot" style="background:${g.color}"></span>${g.label}</div>
         ${S.state.users.filter(u => u.role === g.key).map(u => `
@@ -725,6 +733,7 @@ function viewLogin() {
         </form>`;
       })() : ''}
       <div class="login-note"><b>Demo password for every account:</b> <code style="background:#fff;border:1px solid var(--border);padding:1px 7px;border-radius:6px;font-weight:700">flex2026</code> — the Super Admin can set real passwords per user (menu → <b>Users &amp; passwords</b>) and every user can change their own (avatar menu → <b>Change my password</b>).<br><br>
+      <b>Important:</b> this public demo saves changes only in this browser. Other colleagues cannot see them. Passwords and roles here are demonstrations, not secure access controls. Export a JSON backup before clearing browser data or switching devices.<br><br>
       <b>Roles:</b> the Super Admin sees and does everything. Logistics updates ETAs, logs delays, ticks documents and books couriers. Merchandising comments, raises sample requests and tracks anything affecting the production plan.</div>
     </div></div>
   </div>`;
@@ -1591,7 +1600,7 @@ function openDataMenu() {
       <div class="kv-inline" style="background:#f6f8fb;border:1px solid var(--border2);border-radius:10px;padding:10px 14px">
         Workspace mode: ${mode === 'demo' ? chip('DEMO DATA', 'teal') : chip('YOUR OWN TEST DATA', 'amber')} ·
         <b>${n}</b> shipments · <b>${m}</b> samples · <b>${a}</b> trims POs
-        ${mode === 'demo' ? '<br><span class="td-sub">Demo regenerates fresh dates each day. Clear it to keep your own entries permanently.</span>' : '<br><span class="td-sub">Custom mode: your data is kept as-is and never overwritten by the demo.</span>'}
+        ${mode === 'demo' ? '<br><span class="td-sub">Untouched demo dates refresh each day. Your first edit keeps this workspace on this device.</span>' : '<br><span class="td-sub">Changes are saved only in this browser, never shared with colleagues. Export a backup regularly.</span>'}
       </div>
       <button class="menu-row" data-action="export-json">${icon('download', 16)} <span><b>Export JSON backup</b><br><span class="td-sub">Full workspace in one file — keep it safe, share it, re-import it</span></span>${icon('arrow', 14)}</button>
       ${isDataAdmin() ? `
@@ -1709,10 +1718,15 @@ function loadState() {
       if (u && u.name && !names.has(String(u.name).toLowerCase())) { st.users.push(u); names.add(String(u.name).toLowerCase()); }
     });
   }
-  S.state = st; saveState();
+  S.state = st; saveState(st, true);
   return st;
 }
-function saveState(st) { if (lsOk()) { try { localStorage.setItem(LS_KEY, JSON.stringify(st || S.state)); } catch (e) {} } }
+function saveState(st, pristine = false) {
+  const current = st || S.state;
+  // Only untouched seed data refreshes daily. Preserve any user's edits.
+  if (!pristine && current && current.meta && current.meta.mode === 'demo') current.meta.mode = 'custom';
+  if (lsOk()) { try { localStorage.setItem(LS_KEY, JSON.stringify(current)); } catch (e) { toast('Storage is full. Export a JSON backup before leaving this page.', 'err'); } }
+}
 function logAct(module, refId, action, detail, userId) {
   S.state.activity.unshift({ id: 'a' + Date.now() + Math.random().toString(36).slice(2, 6), ts: new Date().toISOString(), userId: userId || null, module, refId, action, detail: detail || '' });
   if (S.state.activity.length > 400) S.state.activity = S.state.activity.slice(0, 400);
@@ -1751,7 +1765,7 @@ async function api(path, opts = {}) {
     const actor = S.state.users.find(u => u.id === b.userId);
     if (!actor || !['superadmin', 'admin', 'logistics'].includes(actor.role)) throw new Error('Not allowed.');
     const keepUsers = S.state.users;
-    S.state = FlexSeed.build(); S.state.users = keepUsers; saveState(); return { ok: true, mode: 'demo' };
+    S.state = FlexSeed.build(); S.state.users = keepUsers; saveState(S.state, true); return { ok: true, mode: 'demo' };
   }
   if (method === 'POST' && path === '/api/login') {
     const u = S.state.users.find(x => x.id === b.id);
@@ -2102,7 +2116,7 @@ function renderShell() {
       <nav class="side-nav">
         ${NAV.map(n => n.sec
           ? `<div class="nav-sec">${n.sec}</div>`
-          : `<button class="nav-it ${S.route === n.id ? 'on' : ''}" data-action="nav" data-nav="${n.id}">${icon(n.icon)}<span class="nl">${n.label}</span><span class="nv-badge" data-navbadge="${n.id}" style="display:none"></span></button>`
+          : `<button class="nav-it ${S.route === n.id ? 'on' : ''}" data-action="nav" data-nav="${n.id}" aria-label="${n.label}" title="${n.label}">${icon(n.icon)}<span class="nl">${n.label}</span><span class="nv-badge" data-navbadge="${n.id}" style="display:none"></span></button>`
         ).join('')}
       </nav>
       <div class="side-foot">
@@ -2117,9 +2131,9 @@ function renderShell() {
         <div class="tb-title"><h1 id="tb-h"></h1><p id="tb-p"></p></div>
         <div class="tb-right">
           <label class="gsearch">${icon('search', 15)}<input id="gq" placeholder="Search PO, shipment, style…" data-input="gq"></label>
-          <span class="demo-chip">DEMO DATA</span>
+          <span class="demo-chip" id="workspace-mode">LOCAL DEMO</span>
           <div style="position:relative">
-            <button class="icon-btn" data-action="notifs">${icon('bell')}<span class="nb" id="notif-n" style="display:none"></span></button>
+            <button class="icon-btn" data-action="notifs" aria-label="Notifications" title="Notifications">${icon('bell')}<span class="nb" id="notif-n" style="display:none"></span></button>
             <div id="notif-pop"></div>
           </div>
           <button class="btn btn-primary btn-sm" data-action="quick-add">${icon('plus', 15)} New</button>
@@ -2132,6 +2146,8 @@ function renderShell() {
 }
 function updateBadges() {
   if (!S.user) return;
+  const mode = $('#workspace-mode');
+  if (mode) mode.textContent = S.state.meta && S.state.meta.mode === 'custom' ? 'SAVED ON THIS DEVICE' : 'LOCAL DEMO';
   NAV.forEach(n => { if (!n.badge) return; const el = $(`[data-navbadge="${n.id}"]`); if (!el) return; const v = n.badge(); el.style.display = v ? '' : 'none'; el.textContent = v; });
   const ns = notifs().length, nb = $('#notif-n');
   if (nb) { nb.style.display = ns ? '' : 'none'; nb.textContent = ns > 9 ? '9+' : ns; }
@@ -2195,7 +2211,11 @@ document.addEventListener('click', e => {
     'new-sample': () => openSampleForm(),
     'new-acc': () => openAccForm(),
     'export': () => downloadCSV(el.dataset.module),
-    'reset-demo': async () => { await api('/api/reset', { method: 'POST' }); toast('Demo data reset'); closeModal(); await refresh(); },
+    'reset-demo': () => {
+      if (!isDataAdmin()) return toast('Only Super Admin or Management can reset data', 'err');
+      openDataMenu();
+      toast('Use Load demo data below to confirm replacement of your current workspace.');
+    },
     'open-ship': () => openShipModal(id),
     'open-sample': () => openSampleModal(id),
     'open-acc': () => openAccModal(id),

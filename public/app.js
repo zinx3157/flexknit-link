@@ -302,7 +302,7 @@ function renderShell() {
       <nav class="side-nav">
         ${NAV.map(n => n.sec
           ? `<div class="nav-sec">${n.sec}</div>`
-          : `<button class="nav-it ${S.route === n.id ? 'on' : ''}" data-action="nav" data-nav="${n.id}">${icon(n.icon)}<span class="nl">${n.label}</span><span class="nv-badge" data-navbadge="${n.id}" style="display:none"></span></button>`
+          : `<button class="nav-it ${S.route === n.id ? 'on' : ''}" data-action="nav" data-nav="${n.id}" aria-label="${n.label}" title="${n.label}">${icon(n.icon)}<span class="nl">${n.label}</span><span class="nv-badge" data-navbadge="${n.id}" style="display:none"></span></button>`
         ).join('')}
       </nav>
       <div class="side-foot">
@@ -317,9 +317,9 @@ function renderShell() {
         <div class="tb-title"><h1 id="tb-h"></h1><p id="tb-p"></p></div>
         <div class="tb-right">
           <label class="gsearch">${icon('search', 15)}<input id="gq" placeholder="Search PO, shipment, style…" data-input="gq"></label>
-          <span class="demo-chip">DEMO DATA</span>
+          <span class="demo-chip" id="workspace-mode">LOCAL DEMO</span>
           <div style="position:relative">
-            <button class="icon-btn" data-action="notifs">${icon('bell')}<span class="nb" id="notif-n" style="display:none"></span></button>
+            <button class="icon-btn" data-action="notifs" aria-label="Notifications" title="Notifications">${icon('bell')}<span class="nb" id="notif-n" style="display:none"></span></button>
             <div id="notif-pop"></div>
           </div>
           <button class="btn btn-primary btn-sm" data-action="quick-add">${icon('plus', 15)} New</button>
@@ -332,6 +332,8 @@ function renderShell() {
 }
 function updateBadges() {
   if (!S.user) return;
+  const mode = $('#workspace-mode');
+  if (mode) mode.textContent = S.state.meta && S.state.meta.mode === 'custom' ? 'SAVED ON THIS DEVICE' : 'LOCAL DEMO';
   NAV.forEach(n => { if (!n.badge) return; const el = $(`[data-navbadge="${n.id}"]`); if (!el) return; const v = n.badge(); el.style.display = v ? '' : 'none'; el.textContent = v; });
   const ns = notifs().length, nb = $('#notif-n');
   if (nb) { nb.style.display = ns ? '' : 'none'; nb.textContent = ns > 9 ? '9+' : ns; }
@@ -395,7 +397,11 @@ document.addEventListener('click', e => {
     'new-sample': () => openSampleForm(),
     'new-acc': () => openAccForm(),
     'export': () => window.open('/api/export?module=' + el.dataset.module, '_blank'),
-    'reset-demo': async () => { await api('/api/reset', { method: 'POST' }); toast('Demo data reset'); closeModal(); await refresh(); },
+    'reset-demo': () => {
+      if (!isDataAdmin()) return toast('Only Super Admin or Management can reset data', 'err');
+      openDataMenu();
+      toast('Use Load demo data below to confirm replacement of your current workspace.');
+    },
     'open-ship': () => openShipModal(id),
     'open-sample': () => openSampleModal(id),
     'open-acc': () => openAccModal(id),

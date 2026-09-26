@@ -31,7 +31,7 @@ function viewLogin() {
     </div>
     <div class="login-panel"><div class="login-box">
       <h2>Sign in to your workspace</h2>
-      <p class="hint">Demo mode — pick a user to explore the platform with their permissions.</p>
+      <p class="hint">Pick a demo user to explore the platform with their permissions.</p>
       ${groups.map(g => `
         <div class="team-head"><span class="dot" style="background:${g.color}"></span>${g.label}</div>
         ${S.state.users.filter(u => u.role === g.key).map(u => `
@@ -52,6 +52,7 @@ function viewLogin() {
         </form>`;
       })() : ''}
       <div class="login-note"><b>Demo password for every account:</b> <code style="background:#fff;border:1px solid var(--border);padding:1px 7px;border-radius:6px;font-weight:700">flex2026</code> — the Super Admin can set real passwords per user (menu → <b>Users &amp; passwords</b>) and every user can change their own (avatar menu → <b>Change my password</b>).<br><br>
+      <b>Important:</b> this public demo saves changes only in this browser. Other colleagues cannot see them. Passwords and roles here are demonstrations, not secure access controls. Export a JSON backup before clearing browser data or switching devices.<br><br>
       <b>Roles:</b> the Super Admin sees and does everything. Logistics updates ETAs, logs delays, ticks documents and books couriers. Merchandising comments, raises sample requests and tracks anything affecting the production plan.</div>
     </div></div>
   </div>`;
@@ -918,7 +919,7 @@ function openDataMenu() {
       <div class="kv-inline" style="background:#f6f8fb;border:1px solid var(--border2);border-radius:10px;padding:10px 14px">
         Workspace mode: ${mode === 'demo' ? chip('DEMO DATA', 'teal') : chip('YOUR OWN TEST DATA', 'amber')} ·
         <b>${n}</b> shipments · <b>${m}</b> samples · <b>${a}</b> trims POs
-        ${mode === 'demo' ? '<br><span class="td-sub">Demo regenerates fresh dates each day. Clear it to keep your own entries permanently.</span>' : '<br><span class="td-sub">Custom mode: your data is kept as-is and never overwritten by the demo.</span>'}
+        ${mode === 'demo' ? '<br><span class="td-sub">Untouched demo dates refresh each day. Your first edit keeps this workspace on this device.</span>' : '<br><span class="td-sub">Changes are saved only in this browser, never shared with colleagues. Export a backup regularly.</span>'}
       </div>
       <button class="menu-row" data-action="export-json">${icon('download', 16)} <span><b>Export JSON backup</b><br><span class="td-sub">Full workspace in one file — keep it safe, share it, re-import it</span></span>${icon('arrow', 14)}</button>
       ${isDataAdmin() ? `
