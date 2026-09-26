@@ -3,7 +3,7 @@
    Inlines CSS + seed + app + views, and swaps the REST client for a
    localStorage-backed local API. */
 const fs = require('fs'), path = require('path');
-const R = '/home/user/flexknit-link';
+const R = __dirname;
 
 const css = fs.readFileSync(path.join(R, 'public/styles.css'), 'utf8');
 const seed = fs.readFileSync(path.join(R, 'server/seed.js'), 'utf8');
@@ -43,10 +43,15 @@ function loadState() {
       if (u && u.name && !names.has(String(u.name).toLowerCase())) { st.users.push(u); names.add(String(u.name).toLowerCase()); }
     });
   }
-  S.state = st; saveState();
+  S.state = st; saveState(st, true);
   return st;
 }
-function saveState(st) { if (lsOk()) { try { localStorage.setItem(LS_KEY, JSON.stringify(st || S.state)); } catch (e) {} } }
+function saveState(st, pristine = false) {
+  const current = st || S.state;
+  // Only untouched seed data refreshes daily. Preserve any user's edits.
+  if (!pristine && current && current.meta && current.meta.mode === 'demo') current.meta.mode = 'custom';
+  if (lsOk()) { try { localStorage.setItem(LS_KEY, JSON.stringify(current)); } catch (e) { toast('Storage is full. Export a JSON backup before leaving this page.', 'err'); } }
+}
 function logAct(module, refId, action, detail, userId) {
   S.state.activity.unshift({ id: 'a' + Date.now() + Math.random().toString(36).slice(2, 6), ts: new Date().toISOString(), userId: userId || null, module, refId, action, detail: detail || '' });
   if (S.state.activity.length > 400) S.state.activity = S.state.activity.slice(0, 400);
@@ -85,7 +90,7 @@ async function api(path, opts = {}) {
     const actor = S.state.users.find(u => u.id === b.userId);
     if (!actor || !['superadmin', 'admin', 'logistics'].includes(actor.role)) throw new Error('Not allowed.');
     const keepUsers = S.state.users;
-    S.state = FlexSeed.build(); S.state.users = keepUsers; saveState(); return { ok: true, mode: 'demo' };
+    S.state = FlexSeed.build(); S.state.users = keepUsers; saveState(S.state, true); return { ok: true, mode: 'demo' };
   }
   if (method === 'POST' && path === '/api/login') {
     const u = S.state.users.find(x => x.id === b.id);
@@ -282,6 +287,7 @@ ${app}
 </body>
 </html>`;
 
-const OUT = '/home/user/FlexKnit-Link-Demo.html';
+const OUT = path.join(R, 'docs/index.html');
+fs.mkdirSync(path.dirname(OUT), { recursive: true });
 fs.writeFileSync(OUT, html);
 console.log('written', OUT, (html.length / 1024).toFixed(0) + ' KB');
